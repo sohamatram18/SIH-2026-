@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --primary: 13 59 102; /* #0D3B66 - Ashoka Navy */
+    --accent: 217 119 6;   /* #D97706 - Terracotta / Warm Ochre */
+    --success: 42 157 143; /* #2A9D8F - Forest Emerald */
+    --surface: 248 250 252;/* #F8FAFC - Warm Slate */
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #1e293b;
+    background-color: #f8fafc;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Tri-color Top Accent Bar */
+.gov-tricolor-bar {
+  background: linear-gradient(90deg, #FF9933 0%, #FF9933 33.3%, #FFFFFF 33.3%, #FFFFFF 66.6%, #138808 66.6%, #138808 100%);
+  height: 4px;
+}
+
+/* Status Chips */
+.chip {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold tracking-wide;
+}
+.chip-not-applied {
+  @apply bg-slate-100 text-slate-700 border border-slate-300;
+}
+.chip-draft {
+  @apply bg-amber-50 text-amber-800 border border-amber-300;
+}
+.chip-submitted {
+  @apply bg-blue-50 text-blue-800 border border-blue-300;
+}
+.chip-under-verification {
+  @apply bg-indigo-50 text-indigo-800 border border-indigo-300 animate-pulse;
+}
+.chip-deficiency-raised {
+  @apply bg-rose-50 text-rose-800 border border-rose-300;
+}
+.chip-sanctioned {
+  @apply bg-emerald-50 text-emerald-800 border border-emerald-300;
+}
+.chip-disbursed {
+  @apply bg-teal-50 text-teal-800 border border-teal-400 font-bold;
+}
+.chip-rejected {
+  @apply bg-red-50 text-red-800 border border-red-300;
+}
+
+/* Bottom Nav Safe Area */
+.safe-bottom-padding {
+  padding-bottom: 5.5rem;
+}
