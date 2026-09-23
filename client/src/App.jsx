@@ -6,6 +6,7 @@ import { Header } from './components/Header.jsx';
 import { BottomNav } from './components/BottomNav.jsx';
 import { JagoChatDrawer } from './components/JagoChatDrawer.jsx';
 import { LoginPage } from './pages/LoginPage.jsx';
+import { HomePage } from './pages/HomePage.jsx';
 import { DashboardPage } from './pages/DashboardPage.jsx';
 import { SchemesPage } from './pages/SchemesPage.jsx';
 import { ProfilePage } from './pages/ProfilePage.jsx';
@@ -48,14 +49,20 @@ const AppContent = () => {
         <Header onOpenJago={() => setJagoOpen(true)} />
         <main className="pb-16 sm:pb-8">
           <Routes>
+            {/* Redesigned 10-Section Landing Portal */}
+            <Route path="/" element={<HomePage onOpenJago={() => setJagoOpen(true)} />} />
+            <Route path="/home" element={<HomePage onOpenJago={() => setJagoOpen(true)} />} />
+
+            {/* Student Application Dashboard */}
             <Route
-              path="/"
+              path="/dashboard"
               element={
                 <ProtectedRoute>
                   <DashboardPage />
                 </ProtectedRoute>
               }
             />
+
             <Route path="/login" element={<LoginPage />} />
             <Route path="/schemes" element={<SchemesPage />} />
             <Route
