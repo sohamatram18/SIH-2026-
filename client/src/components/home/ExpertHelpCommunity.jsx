@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '../../context/LanguageContext.jsx';
 import { 
   Bot, 
   MessageSquare, 
@@ -17,6 +18,7 @@ import {
 
 export const ExpertHelpCommunity = ({ onOpenJago }) => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [askModalOpen, setAskModalOpen] = useState(false);
   const [userQuestion, setUserQuestion] = useState('');
   const [submittedMessage, setSubmittedMessage] = useState(false);
@@ -34,7 +36,7 @@ export const ExpertHelpCommunity = ({ onOpenJago }) => {
       question: 'How long does DigiLocker e-KYC take if the State e-District server is slow?',
       asker: 'Sunita Soren (Utkal University)',
       date: '4 days ago',
-      answer: 'Our verification layer has an automated 8-second circuit breaker. If State e-District is slow, you are NOT blocked — you can submit your application immediately, and the officer verifies it asynchronously.',
+      answer: 'Our verification layer has an automated 8-second circuit breaker. If State e-District is slow, you are NOT blocked — you can submit your application immediately on JanjatiSetu, and the officer verifies it asynchronously.',
       officer: 'Nodal Technical Team',
       likes: 68
     },
@@ -66,19 +68,19 @@ export const ExpertHelpCommunity = ({ onOpenJago }) => {
         <div className="text-center max-w-3xl mx-auto space-y-3 mb-14">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-extrabold tracking-wide uppercase">
             <HelpCircle className="w-3.5 h-3.5" />
-            Assistance & Community
+            {t('assistanceBadge')}
           </div>
           <h2 className="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight">
-            Expert Help & Student Discussion Forum
+            {t('expertHelpTitle')}
           </h2>
           <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
-            Get instant answers in your native language through the JAGO AI Voice Assistant or connect directly with MoTA Nodal Officers and tribal peer scholars.
+            {t('expertHelpDesc')}
           </p>
         </div>
 
         {/* 2-Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Left Column: JAGO AI & Helpdesk Channels (5 Cols) */}
+          {/* Left Column: JAGO AI & Helpdesk Channels */}
           <div className="lg:col-span-5 space-y-5">
             {/* JAGO AI Big Feature Card */}
             <div className="bg-gradient-to-br from-amber-500 via-amber-600 to-orange-600 rounded-3xl p-6 sm:p-7 text-slate-950 shadow-xl space-y-5 relative overflow-hidden">
@@ -95,10 +97,10 @@ export const ExpertHelpCommunity = ({ onOpenJago }) => {
 
               <div>
                 <h3 className="font-black text-xl text-slate-950">
-                  JAGO (जागो) Tribal AI Assistant
+                  {t('jagoCardTitle')}
                 </h3>
                 <p className="text-xs text-amber-950 font-medium mt-1 leading-relaxed">
-                  Ask questions via Speech-to-Text or chat in <strong>6 Indian languages</strong> (English, हिन्दी, ଓଡ଼ିଆ, বাংলা, संथाली, गोंडी) with tribal cultural greetings (<em>Johar!</em>).
+                  {t('jagoCardDesc')}
                 </p>
               </div>
 
@@ -122,7 +124,7 @@ export const ExpertHelpCommunity = ({ onOpenJago }) => {
                 className="w-full py-3 px-5 rounded-2xl bg-slate-950 hover:bg-slate-900 text-amber-400 font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg transition hover:scale-[1.02]"
               >
                 <Bot className="w-4 h-4" />
-                <span>Launch Voice Assistant Now</span>
+                <span>{t('launchVoiceAssistant')}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>
@@ -131,49 +133,49 @@ export const ExpertHelpCommunity = ({ onOpenJago }) => {
             <div className="bg-slate-50 border border-slate-200 rounded-3xl p-6 space-y-4">
               <h4 className="font-extrabold text-sm text-slate-900 flex items-center gap-2">
                 <PhoneCall className="w-4 h-4 text-gov-blue" />
-                National Tribal Helpdesk
+                {t('nationalHelpdesk')}
               </h4>
               <div className="space-y-3 text-xs">
                 <div className="flex items-center justify-between p-3 bg-white rounded-xl border border-slate-200">
                   <div>
-                    <span className="text-[10px] text-slate-400 font-bold uppercase">Toll-Free National Hotline</span>
+                    <span className="text-[10px] text-slate-400 font-bold uppercase">{t('tollFreeHotline')}</span>
                     <p className="font-extrabold text-slate-900 text-sm">1800-11-7788</p>
                   </div>
                   <span className="text-[10px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full font-bold">
-                    Mon-Sat (9 AM - 6 PM)
+                    {t('monSatTiming')}
                   </span>
                 </div>
 
                 <div className="flex items-center justify-between p-3 bg-white rounded-xl border border-slate-200">
                   <div>
-                    <span className="text-[10px] text-slate-400 font-bold uppercase">Direct Grievance Desk</span>
+                    <span className="text-[10px] text-slate-400 font-bold uppercase">{t('directGrievanceDesk')}</span>
                     <p className="font-extrabold text-slate-900 text-sm">grievance-mota@gov.in</p>
                   </div>
                   <button
                     onClick={() => navigate('/grievance')}
                     className="px-2.5 py-1 bg-gov-blue text-white rounded-lg text-xs font-bold hover:bg-gov-navy transition"
                   >
-                    File Appeal
+                    {t('fileAppeal')}
                   </button>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Right Column: Community Q&A Board (7 Cols) */}
+          {/* Right Column: Community Q&A Board */}
           <div className="lg:col-span-7 bg-slate-50 border border-slate-200 rounded-3xl p-6 sm:p-7 space-y-6">
             <div className="flex items-center justify-between pb-4 border-b border-slate-200">
               <div className="flex items-center gap-2">
                 <MessageSquare className="w-5 h-5 text-gov-blue" />
                 <h3 className="font-extrabold text-base text-slate-900">
-                  Recent Verified Answers
+                  {t('recentAnswersTitle')}
                 </h3>
               </div>
               <button
                 onClick={() => setAskModalOpen(true)}
                 className="px-3.5 py-1.5 rounded-xl bg-gov-blue hover:bg-gov-navy text-white font-bold text-xs flex items-center gap-1.5 transition shadow"
               >
-                <span>Ask a Question</span>
+                <span>{t('askQuestionBtn')}</span>
               </button>
             </div>
 
@@ -214,10 +216,10 @@ export const ExpertHelpCommunity = ({ onOpenJago }) => {
         <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 max-w-lg w-full p-6 space-y-4 animate-in fade-in zoom-in-95 duration-150">
             <h3 className="font-extrabold text-base text-slate-900">
-              Ask MoTA Nodal Officer & Community
+              {t('askModalTitle')}
             </h3>
             <p className="text-xs text-slate-500">
-              Post your query regarding eligibility, DigiLocker verification, or PFMS DBT bank transfers.
+              {t('askModalDesc')}
             </p>
 
             {submittedMessage ? (
@@ -250,7 +252,7 @@ export const ExpertHelpCommunity = ({ onOpenJago }) => {
                     className="px-4 py-2 bg-gov-blue hover:bg-gov-navy text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition shadow"
                   >
                     <Send className="w-3.5 h-3.5" />
-                    <span>Submit Query</span>
+                    <span>{t('submitQuery')}</span>
                   </button>
                 </div>
               </form>

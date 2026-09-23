@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '../../context/LanguageContext.jsx';
 import { 
   ArrowRight, 
   ChevronLeft, 
@@ -18,68 +19,69 @@ import {
 
 export const HeroBannerCarousel = ({ onOpenJago, onOpenCompare }) => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
   const slides = [
     {
       id: 1,
-      badge: 'Academic Year 2026-27 Open',
+      badge: t('heroBadge1'),
       badgeColor: 'bg-emerald-500/20 text-emerald-300 border-emerald-400/30',
-      title: 'Unified Scholarship Portal for Tribal Students',
-      highlight: 'Empowering 38.5 Lakh+ ST Scholars Across India',
-      description: 'Single-window discovery and paperless application for all 5 official Ministry of Tribal Affairs (MoTA) schemes with instant DigiLocker e-KYC and conflict-free processing.',
-      primaryBtn: { label: 'Explore 5 MoTA Schemes', link: '/schemes' },
-      secondaryBtn: { label: 'DigiLocker Vault', link: '/wallet' },
+      title: t('heroTitle1'),
+      highlight: t('heroHighlight1'),
+      description: t('heroDesc1'),
+      primaryBtn: { label: t('heroPrimary1'), link: '/schemes' },
+      secondaryBtn: { label: t('heroSecondary1'), link: '/wallet' },
       bgGradient: 'from-slate-950 via-slate-900 to-blue-950',
       accentColor: 'from-amber-400 to-amber-600',
-      features: ['100% Paperless DigiLocker', 'Real-time PFMS DBT', 'Zero Application Fee', 'Multi-lingual JAGO AI'],
-      statBox: { value: '₹1,420 Cr+', label: 'Direct Benefit Transfer (DBT) via PFMS' },
+      features: [t('heroFeat1_1'), t('heroFeat1_2'), t('heroFeat1_3'), t('heroFeat1_4')],
+      statBox: { value: t('heroStatVal1'), label: t('heroStatLbl1') },
       icon: GraduationCap
     },
     {
       id: 2,
-      badge: 'Top-Class Education • 246 Premier Institutes',
+      badge: t('heroBadge2'),
       badgeColor: 'bg-amber-500/20 text-amber-300 border-amber-400/30',
-      title: 'Full Tuition + ₹45,000 Laptop Grant',
-      highlight: 'For IITs, IIMs, AIIMS, NITs & National Law Universities',
-      description: 'ST students admitted into notified premier institutes receive full tuition fee reimbursement, ₹36,000/yr living expenses, ₹5,000 book grant and a one-time ₹45,000 laptop entitlement.',
-      primaryBtn: { label: 'Apply Top-Class Scheme', link: '/apply/TOP_CLASS' },
-      secondaryBtn: { label: 'Check 246 Institutes', link: '/schemes' },
+      title: t('heroTitle2'),
+      highlight: t('heroHighlight2'),
+      description: t('heroDesc2'),
+      primaryBtn: { label: t('heroPrimary2'), link: '/apply/TOP_CLASS' },
+      secondaryBtn: { label: t('heroSecondary2'), link: '/schemes' },
       bgGradient: 'from-slate-950 via-amber-950/70 to-slate-900',
       accentColor: 'from-amber-400 to-orange-500',
-      features: ['100% Non-Refundable Fees', '₹36,000 Living Expenses', '₹45,000 Laptop Grant', 'Divyang Assistance'],
-      statBox: { value: '246 Institutes', label: 'Empanelled Premier Institutes across India' },
+      features: [t('heroFeat2_1'), t('heroFeat2_2'), t('heroFeat2_3'), t('heroFeat2_4')],
+      statBox: { value: t('heroStatVal2'), label: t('heroStatLbl2') },
       icon: Laptop
     },
     {
       id: 3,
-      badge: 'National Overseas Scholarship (NOS)',
+      badge: t('heroBadge3'),
       badgeColor: 'bg-blue-500/20 text-blue-300 border-blue-400/30',
-      title: 'Study at Top 500 QS World Universities',
-      highlight: 'Full Foreign Tuition + USD 15,400 Annual Allowance',
-      description: 'Pursue Master’s and Ph.D. degrees in premier universities abroad with airfare, medical insurance, visa fees, contingency grants and living allowances funded by the Ministry of Tribal Affairs.',
-      primaryBtn: { label: 'Apply Overseas (NOS)', link: '/apply/NOS' },
-      secondaryBtn: { label: 'Compare Benefits', action: 'compare' },
+      title: t('heroTitle3'),
+      highlight: t('heroHighlight3'),
+      description: t('heroDesc3'),
+      primaryBtn: { label: t('heroPrimary3'), link: '/apply/NOS' },
+      secondaryBtn: { label: t('heroSecondary3'), action: 'compare' },
       bgGradient: 'from-slate-950 via-indigo-950/70 to-slate-900',
       accentColor: 'from-blue-400 to-cyan-400',
-      features: ['Top 500 QS Universities', '$15,400/yr (USA) • £9,900/yr (UK)', 'Return Airfare Covered', 'Full Visa & Health Cover'],
-      statBox: { value: '$15,400/yr', label: 'Annual Living Maintenance Allowance' },
+      features: [t('heroFeat3_1'), t('heroFeat3_2'), t('heroFeat3_3'), t('heroFeat3_4')],
+      statBox: { value: t('heroStatVal3'), label: t('heroStatLbl3') },
       icon: Globe2
     },
     {
       id: 4,
-      badge: 'National Fellowship for ST Students (NFST)',
+      badge: t('heroBadge4'),
       badgeColor: 'bg-purple-500/20 text-purple-300 border-purple-400/30',
-      title: 'Doctoral Fellowship for ST Scholars',
-      highlight: '₹31,000/mo JRF • ₹35,000/mo SRF + HRA & Contingency',
-      description: 'Merit-based financial assistance for Scheduled Tribe students pursuing regular M.Phil and Ph.D. research courses in UGC-recognized Indian Universities with zero income cap.',
-      primaryBtn: { label: 'Apply NFST Fellowship', link: '/apply/NFST' },
-      secondaryBtn: { label: 'Ask JAGO AI', action: 'jago' },
+      title: t('heroTitle4'),
+      highlight: t('heroHighlight4'),
+      description: t('heroDesc4'),
+      primaryBtn: { label: t('heroPrimary4'), link: '/apply/NFST' },
+      secondaryBtn: { label: t('heroSecondary4'), action: 'jago' },
       bgGradient: 'from-slate-950 via-purple-950/70 to-slate-900',
       accentColor: 'from-purple-400 to-pink-400',
-      features: ['No Family Income Ceiling', '₹31,000 - ₹35,000/month', 'Annual Contingency Grant', 'PVTG Priority Quota'],
-      statBox: { value: '₹35,000/mo', label: 'Senior Research Fellowship (SRF)' },
+      features: [t('heroFeat4_1'), t('heroFeat4_2'), t('heroFeat4_3'), t('heroFeat4_4')],
+      statBox: { value: t('heroStatVal4'), label: t('heroStatLbl4') },
       icon: Award
     }
   ];
@@ -185,12 +187,12 @@ export const HeroBannerCarousel = ({ onOpenJago, onOpenCompare }) => {
                 title="Voice Assistant"
               >
                 <Zap className="w-3.5 h-3.5 text-amber-400" />
-                <span>Ask JAGO Voice AI</span>
+                <span>{t('askJago')}</span>
               </button>
             </div>
           </div>
 
-          {/* Right Column: Hero Visual Card & Quick Stat Widget */}
+          {/* Right Column: Hero Visual Card */}
           <div className="lg:col-span-4 hidden lg:block">
             <div className="relative bg-gradient-to-b from-white/10 to-white/5 border border-white/15 rounded-3xl p-6 backdrop-blur-md shadow-2xl space-y-5">
               {/* Highlight Icon Container */}
@@ -200,7 +202,7 @@ export const HeroBannerCarousel = ({ onOpenJago, onOpenCompare }) => {
                 </div>
                 <span className="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold border border-emerald-400/30 flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                  Verified Govt Scheme
+                  {t('verifiedGovtScheme')}
                 </span>
               </div>
 
@@ -217,31 +219,30 @@ export const HeroBannerCarousel = ({ onOpenJago, onOpenCompare }) => {
               {/* Quick Checklist */}
               <div className="space-y-2 text-xs text-slate-300">
                 <div className="flex items-center justify-between py-1 border-b border-white/10">
-                  <span className="text-slate-400">Application Mode</span>
-                  <span className="font-bold text-white">100% Online (PWA)</span>
+                  <span className="text-slate-400">{t('appMode')}</span>
+                  <span className="font-bold text-white">{t('onlinePwa')}</span>
                 </div>
                 <div className="flex items-center justify-between py-1 border-b border-white/10">
-                  <span className="text-slate-400">Disbursement Channel</span>
-                  <span className="font-bold text-white">Direct APBS Bank DBT</span>
+                  <span className="text-slate-400">{t('disbChannel')}</span>
+                  <span className="font-bold text-white">{t('directApbsDbt')}</span>
                 </div>
                 <div className="flex items-center justify-between py-1">
-                  <span className="text-slate-400">Doc Verification</span>
-                  <span className="font-bold text-emerald-400">DigiLocker PKI e-KYC</span>
+                  <span className="text-slate-400">{t('docVerif')}</span>
+                  <span className="font-bold text-emerald-400">{t('digilockerPki')}</span>
                 </div>
               </div>
 
               {/* Switch slide quick link */}
               <div className="pt-1 flex items-center justify-between text-[11px] text-slate-400">
-                <span>Slide {currentSlide + 1} of {slides.length}</span>
-                <span className="text-amber-300 font-medium">Auto-rotating banner</span>
+                <span>{t('slideOf')} {currentSlide + 1} of {slides.length}</span>
+                <span className="text-amber-300 font-medium">JanjatiSetu Portal</span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Carousel Bottom Controls & Indicators */}
+        {/* Carousel Bottom Controls */}
         <div className="mt-8 pt-4 border-t border-white/10 flex items-center justify-between">
-          {/* Navigation Arrows */}
           <div className="flex items-center gap-2">
             <button
               onClick={prevSlide}
@@ -259,7 +260,6 @@ export const HeroBannerCarousel = ({ onOpenJago, onOpenCompare }) => {
             </button>
           </div>
 
-          {/* Slide Dots */}
           <div className="flex items-center gap-2">
             {slides.map((s, idx) => (
               <button
@@ -273,7 +273,6 @@ export const HeroBannerCarousel = ({ onOpenJago, onOpenCompare }) => {
             ))}
           </div>
 
-          {/* Quick Stats Ticker */}
           <div className="hidden sm:flex items-center gap-4 text-xs text-slate-400">
             <span className="flex items-center gap-1.5">
               <ShieldCheck className="w-4 h-4 text-emerald-400" />

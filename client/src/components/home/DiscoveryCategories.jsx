@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '../../context/LanguageContext.jsx';
 import { 
   BookOpen, 
   GraduationCap, 
@@ -12,7 +13,7 @@ import {
   Laptop, 
   FileText, 
   CheckCircle, 
-  Sparkles,
+  Sparkles, 
   ChevronRight,
   ShieldCheck,
   Compass
@@ -20,13 +21,14 @@ import {
 
 export const DiscoveryCategories = ({ onOpenCompare }) => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const categories = [
     {
       id: 'pre_matric',
       code: 'PRE_MATRIC',
-      title: 'School Education',
-      subtitle: 'Class IX & X (EMRS & Govt Schools)',
+      title: 'School Education (Class IX-X)',
+      subtitle: 'EMRS & Govt State Schools',
       benefit: '₹3,500/yr (Day) • ₹7,000/yr (Hostel)',
       income: 'Income ≤ ₹2.50 Lakh/yr',
       tag: 'School Level',
@@ -124,13 +126,13 @@ export const DiscoveryCategories = ({ onOpenCompare }) => {
           <div>
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-extrabold tracking-wide uppercase mb-2">
               <Compass className="w-3.5 h-3.5" />
-              Direct Scheme Discovery
+              {t('browseByCohortBadge')}
             </div>
             <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-              Browse MoTA Scholarships by Cohort
+              {t('browseByCohortTitle')}
             </h2>
             <p className="text-xs sm:text-sm text-slate-500 mt-1">
-              Select your educational level to view tailored benefits, statutory eligibility, and application forms.
+              {t('browseByCohortDesc')}
             </p>
           </div>
 
@@ -138,7 +140,7 @@ export const DiscoveryCategories = ({ onOpenCompare }) => {
             onClick={() => navigate('/schemes')}
             className="self-start md:self-auto px-4 py-2 text-xs font-bold text-gov-blue hover:text-slate-900 flex items-center gap-1.5 transition group"
           >
-            <span>View All Schemes Matrix</span>
+            <span>{t('viewAllMatrixBtn')}</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition" />
           </button>
         </div>
@@ -153,7 +155,6 @@ export const DiscoveryCategories = ({ onOpenCompare }) => {
                 onClick={() => navigate(cat.link)}
                 className="bg-white rounded-2xl border border-slate-200 hover:border-gov-blue/60 p-6 shadow-sm hover:shadow-xl transition-all duration-200 flex flex-col justify-between cursor-pointer group hover:-translate-y-1 relative overflow-hidden"
               >
-                {/* Top Strip Highlight */}
                 <div className="absolute top-0 left-0 right-0 h-1 bg-transparent group-hover:bg-gradient-to-r group-hover:from-gov-blue group-hover:to-amber-500 transition"></div>
 
                 <div>
@@ -191,7 +192,7 @@ export const DiscoveryCategories = ({ onOpenCompare }) => {
                 </div>
 
                 <div className="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-gov-blue group-hover:text-amber-600 transition">
-                  <span>Apply Now</span>
+                  <span>{t('applyNow')}</span>
                   <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition" />
                 </div>
               </div>
@@ -199,12 +200,12 @@ export const DiscoveryCategories = ({ onOpenCompare }) => {
           })}
         </div>
 
-        {/* Secondary Row: Popular / Trending Links Strip (Careers360 style) */}
+        {/* Secondary Row: Popular / Trending Links Strip */}
         <div className="mt-10 bg-slate-50 rounded-2xl border border-slate-200 p-4 sm:p-5">
           <div className="flex flex-col sm:flex-row sm:items-center gap-3">
             <div className="flex items-center gap-2 text-slate-900 font-extrabold text-xs flex-shrink-0">
               <TrendingUp className="w-4 h-4 text-amber-600" />
-              <span>Trending Tools & Predictors:</span>
+              <span>{t('trendingTools')}</span>
             </div>
 
             <div className="flex flex-wrap items-center gap-2 flex-1">

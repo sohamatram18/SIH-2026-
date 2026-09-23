@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '../../context/LanguageContext.jsx';
 import { 
   Bell, 
   Calendar, 
@@ -16,6 +17,7 @@ import {
 
 export const NewsUpdatesFeed = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [filter, setFilter] = useState('ALL');
   const [downloadModal, setDownloadModal] = useState(null);
 
@@ -40,7 +42,7 @@ export const NewsUpdatesFeed = () => {
       title: 'Last Date for Pre-Matric & Post-Matric Fresh Applications Announced: Oct 31, 2026',
       date: 'Sept 18, 2026',
       time: '10:00 IST',
-      summary: 'Students enrolled in Class IX to PG courses across all States and Union Territories must complete their DigiLocker e-KYC and submit online.',
+      summary: 'Students enrolled in Class IX to PG courses across all States and Union Territories must complete their DigiLocker e-KYC on JanjatiSetu and submit online.',
       sanctionNo: 'MoTA/SCH/SCH-NOTICE-2026',
       isNew: true
     },
@@ -67,18 +69,6 @@ export const NewsUpdatesFeed = () => {
       summary: 'Monthly JRF (₹31,000) and SRF (₹35,000) fellowships with HRA credited directly to 3,420 tribal research scholars.',
       sanctionNo: 'MoTA/NFST/SFMP-82026',
       isNew: false
-    },
-    {
-      id: 5,
-      category: 'GRIEVANCE',
-      tag: 'Grievance Drive',
-      tagColor: 'bg-amber-100 text-amber-900',
-      title: 'Special 7-Day Fast-Track Bank Seeding & NPCI Redressal Drive for PVTG Districts',
-      date: 'Aug 29, 2026',
-      time: '09:30 IST',
-      summary: 'District Nodal Officers deployed in 75 PVTG clusters to resolve bank account mismatch and Aadhaar APBS inactive seeding.',
-      sanctionNo: 'MoTA/APBS/PVTG-DRIVE-2026',
-      isNew: false
     }
   ];
 
@@ -94,23 +84,23 @@ export const NewsUpdatesFeed = () => {
           <div>
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100 text-gov-blue text-xs font-extrabold tracking-wide uppercase mb-2">
               <Bell className="w-3.5 h-3.5" />
-              Official Notifications
+              {t('officialNoticesBadge')}
             </div>
             <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-              Latest News, Sanction Orders & Circulars
+              {t('latestNewsTitle')}
             </h2>
             <p className="text-xs sm:text-sm text-slate-500 mt-1">
-              Real-time administrative notices, PFMS DBT sanction ledgers, and deadline alerts directly from Shastri Bhawan, New Delhi.
+              {t('latestNewsDesc')}
             </p>
           </div>
 
           {/* Filter Pills */}
           <div className="flex flex-wrap items-center gap-1.5 self-start md:self-auto">
             {[
-              { key: 'ALL', label: 'All Notices' },
-              { key: 'SANCTION', label: 'Sanctions & DBT' },
-              { key: 'DEADLINE', label: 'Deadlines' },
-              { key: 'GUIDELINE', label: 'Guidelines' }
+              { key: 'ALL', label: t('allNotices') },
+              { key: 'SANCTION', label: t('sanctionsDbt') },
+              { key: 'DEADLINE', label: t('deadlines') },
+              { key: 'GUIDELINE', label: t('guidelines') }
             ].map(f => (
               <button
                 key={f.key}
@@ -131,10 +121,10 @@ export const NewsUpdatesFeed = () => {
         <div className="bg-amber-500/10 border border-amber-300/60 rounded-2xl p-3 mb-8 flex items-center gap-3 overflow-hidden">
           <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-500 text-slate-950 font-black text-[10px] uppercase flex-shrink-0 tracking-wider">
             <span className="w-2 h-2 rounded-full bg-slate-950 animate-ping"></span>
-            LIVE TICKER
+            {t('liveTickerTag')}
           </div>
           <p className="text-xs font-bold text-amber-950 truncate">
-            🔥 Fresh applications for Academic Year 2026-27 are now active across all 5 MoTA Schemes • DigiLocker e-KYC is mandatory for zero-document upload.
+            {t('liveTickerText')}
           </p>
         </div>
 
@@ -174,7 +164,7 @@ export const NewsUpdatesFeed = () => {
                   className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-gov-blue hover:text-white text-slate-700 text-xs font-bold flex items-center gap-1.5 transition"
                 >
                   <FileText className="w-3.5 h-3.5" />
-                  <span>View Notice</span>
+                  <span>{t('viewNotice')}</span>
                 </button>
               </div>
             </div>
@@ -187,7 +177,7 @@ export const NewsUpdatesFeed = () => {
             onClick={() => navigate('/payments')}
             className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-slate-900 hover:bg-gov-blue text-white text-xs font-extrabold shadow-md transition"
           >
-            <span>Search All Central Sanctions in PFMS Ledger</span>
+            <span>{t('searchAllSanctions')}</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>
@@ -237,7 +227,7 @@ export const NewsUpdatesFeed = () => {
                 className="px-4 py-2 bg-gov-blue hover:bg-gov-navy text-white font-bold text-xs rounded-xl flex items-center gap-1.5 transition shadow"
               >
                 <Download className="w-3.5 h-3.5" />
-                <span>Download PDF</span>
+                <span>{t('downloadPdf')}</span>
               </button>
             </div>
           </div>

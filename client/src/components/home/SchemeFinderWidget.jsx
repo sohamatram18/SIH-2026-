@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '../../context/LanguageContext.jsx';
 import { 
   Search, 
   Sparkles, 
@@ -17,11 +18,12 @@ import {
 
 export const SchemeFinderWidget = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
-  const [educationLevel, setEducationLevel] = useState('ug_pg'); // 'school_9_10', 'school_11_12', 'ug_pg', 'phd', 'abroad'
+  const [educationLevel, setEducationLevel] = useState('ug_pg');
   const [state, setState] = useState('All');
-  const [tribalCategory, setTribalCategory] = useState('ST'); // 'ST', 'PVTG', 'DIVYANG'
-  const [incomeRange, setIncomeRange] = useState('under_2_5l'); // 'under_2_5l', '2_5l_to_6l', 'above_6l'
+  const [tribalCategory, setTribalCategory] = useState('ST');
+  const [incomeRange, setIncomeRange] = useState('under_2_5l');
   const [matchedModalOpen, setMatchedModalOpen] = useState(false);
 
   const states = [
@@ -38,7 +40,7 @@ export const SchemeFinderWidget = () => {
     'Assam & North East'
   ];
 
-  // Logic to calculate matched schemes based on inputs
+  // Logic to calculate matched schemes
   const calculateMatches = () => {
     const matches = [];
 
@@ -104,7 +106,6 @@ export const SchemeFinderWidget = () => {
       });
     }
 
-    // Default fallback if no match
     if (matches.length === 0) {
       matches.push({
         code: 'TOP_CLASS',
@@ -129,7 +130,6 @@ export const SchemeFinderWidget = () => {
 
   return (
     <div className="relative -mt-6 sm:-mt-8 z-30 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      {/* Main Container Card (Careers360 + myScheme search widget) */}
       <div className="bg-white rounded-2xl sm:rounded-3xl shadow-xl border border-slate-200/90 p-5 sm:p-7 backdrop-blur-lg">
         {/* Widget Header Strip */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 mb-4 border-b border-slate-100">
@@ -139,16 +139,16 @@ export const SchemeFinderWidget = () => {
             </div>
             <div>
               <h3 className="font-extrabold text-sm sm:text-base text-slate-900 tracking-tight">
-                Find Scholarship Schemes For You
+                {t('findScholarshipTitle')}
               </h3>
               <p className="text-[11px] sm:text-xs text-slate-500">
-                Filter across 5 MoTA Central Schemes in seconds • 100% Conflict-Free Matching
+                {t('findScholarshipSub')}
               </p>
             </div>
           </div>
           <span className="self-start sm:self-auto px-2.5 py-1 rounded-full bg-amber-50 text-amber-900 text-[11px] font-bold border border-amber-200 flex items-center gap-1.5">
             <Sparkles className="w-3.5 h-3.5 text-amber-600" />
-            AI-Assisted Eligibility Check
+            {t('aiAssistedTag')}
           </span>
         </div>
 
@@ -158,7 +158,7 @@ export const SchemeFinderWidget = () => {
           <div>
             <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
               <GraduationCap className="w-3.5 h-3.5 text-gov-blue" />
-              1. Education Level
+              {t('eduLevelLabel')}
             </label>
             <div className="relative">
               <select
@@ -179,7 +179,7 @@ export const SchemeFinderWidget = () => {
           <div>
             <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
               <MapPin className="w-3.5 h-3.5 text-emerald-600" />
-              2. State / Region
+              {t('stateLabel')}
             </label>
             <div className="relative">
               <select
@@ -198,7 +198,7 @@ export const SchemeFinderWidget = () => {
           <div>
             <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
               <Users className="w-3.5 h-3.5 text-amber-600" />
-              3. Tribal Category & Special Group
+              {t('tribalCatLabel')}
             </label>
             <div className="relative">
               <select
@@ -217,7 +217,7 @@ export const SchemeFinderWidget = () => {
           <div>
             <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
               <Wallet className="w-3.5 h-3.5 text-purple-600" />
-              4. Annual Family Income
+              {t('incomeLabel')}
             </label>
             <div className="relative">
               <select
@@ -239,7 +239,7 @@ export const SchemeFinderWidget = () => {
               className="w-full py-3 px-6 bg-gradient-to-r from-gov-blue to-gov-navy hover:from-slate-900 hover:to-gov-blue text-white font-extrabold text-xs sm:text-sm rounded-xl shadow-md flex items-center justify-center gap-2 transition hover:scale-[1.01] active:scale-[0.99]"
             >
               <Search className="w-4 h-4" />
-              <span>Check Matched Schemes & Entitlement</span>
+              <span>{t('checkMatchedBtn')}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
@@ -247,7 +247,7 @@ export const SchemeFinderWidget = () => {
 
         {/* Quick Suggestion Pills */}
         <div className="mt-4 pt-3 border-t border-slate-100 flex flex-wrap items-center gap-2 text-[11px] text-slate-500">
-          <span className="font-bold text-slate-700">Quick Filters:</span>
+          <span className="font-bold text-slate-700">{t('quickFilters')}</span>
           <button 
             type="button"
             onClick={() => { setEducationLevel('ug_pg'); setIncomeRange('2_5l_to_6l'); setMatchedModalOpen(true); }}
@@ -285,7 +285,7 @@ export const SchemeFinderWidget = () => {
                     Matched Scholarship Schemes ({matchedSchemes.length})
                   </h3>
                   <p className="text-[11px] text-slate-300">
-                    Based on your selected education, state & income profile
+                    JanjatiSetu AI Verified Matching
                   </p>
                 </div>
               </div>
@@ -347,18 +347,17 @@ export const SchemeFinderWidget = () => {
                 </div>
               ))}
 
-              {/* Note on statutory conflict rules */}
               <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 flex items-start gap-2.5 text-xs text-amber-900">
                 <AlertCircle className="w-4 h-4 text-amber-700 flex-shrink-0 mt-0.5" />
                 <p>
-                  <strong>Statutory One-Scheme Rule:</strong> In accordance with Central Government financial rules, a tribal student may claim only one Central MoTA scholarship concurrently per academic cycle.
+                  <strong>Statutory One-Scheme Rule:</strong> A tribal student may claim only one Central MoTA scholarship concurrently per academic cycle.
                 </p>
               </div>
             </div>
 
             {/* Modal Footer */}
             <div className="bg-slate-50 px-6 py-3 border-t border-slate-100 flex items-center justify-between">
-              <span className="text-xs text-slate-500">100% verified against MoTA rules</span>
+              <span className="text-xs text-slate-500">JanjatiSetu • 100% verified against MoTA rules</span>
               <button
                 onClick={() => setMatchedModalOpen(false)}
                 className="px-4 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold rounded-xl transition"

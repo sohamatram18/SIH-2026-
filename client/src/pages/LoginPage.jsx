@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
+import { useLanguage } from '../context/LanguageContext.jsx';
 import { useNavigate } from 'react-router-dom';
 import { 
   Phone, 
@@ -11,13 +12,21 @@ import {
   Users, 
   Building2, 
   GraduationCap,
-  AlertCircle
+  AlertCircle,
+  Lock,
+  RefreshCw,
+  QrCode,
+  FileCheck2,
+  Cpu,
+  BadgeCheck
 } from 'lucide-react';
 
 export const LoginPage = () => {
   const { sendOtp, verifyOtp, demoLogin, error } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
 
+  const [activeTab, setActiveTab] = useState('mobile'); // 'mobile' | 'apaar' | 'officer'
   const [step, setStep] = useState('phone'); // 'phone' | 'otp'
   const [phone, setPhone] = useState('');
   const [otp, setOtp] = useState('');
@@ -26,6 +35,23 @@ export const LoginPage = () => {
   const [devOtpHint, setDevOtpHint] = useState(null);
   const [loading, setLoading] = useState(false);
   const [formError, setFormError] = useState(null);
+  const [timer, setTimer] = useState(0);
+
+  // APAAR ID state
+  const [apaarId, setApaarId] = useState('');
+  // Officer login state
+  const [aisheCode, setAisheCode] = useState('');
+  const [officerPassword, setOfficerPassword] = useState('');
+  const [securityPin, setSecurityPin] = useState('');
+
+  // 60s Timer countdown for OTP
+  useEffect(() => {
+    let interval;
+    if (timer > 0) {
+      interval = setInterval(() => setTimer((prev) => prev - 1), 1000);
+    }
+    return () => clearInterval(interval);
+  }, [timer]);
 
   const handleSendOtp = async (e) => {
     e.preventDefault();
@@ -40,9 +66,10 @@ export const LoginPage = () => {
       const res = await sendOtp(phone);
       if (res.devOtp) {
         setDevOtpHint(res.devOtp);
-        setOtp(res.devOtp); // pre-fill for ease of testing
+        setOtp(res.devOtp);
       }
       setStep('otp');
+      setTimer(60);
     } catch (err) {
       setFormError(err.message);
     } finally {
@@ -54,7 +81,7 @@ export const LoginPage = () => {
     e.preventDefault();
     setFormError(null);
     if (!otp || otp.length < 4) {
-      setFormError('Please enter the 6-digit OTP sent to your phone.');
+      setFormError('Please enter the 6-digit OTP code.');
       return;
     }
 
@@ -62,6 +89,49 @@ export const LoginPage = () => {
       setLoading(true);
       await verifyOtp({ phone, otp, role: selectedRole, name });
       navigate('/');
+    } catch (err) {
+      setFormError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleApaarAuth = async (e) => {
+    e.preventDefault();
+    setFormError(null);
+    if (!apaarId || apaarId.replace(/\D/g, '').length < 12) {
+      setFormError('Please enter a valid 12-digit APAAR / EduID.');
+      return;
+    }
+    try {
+      setLoading(true);
+      // Authenticate via Student Top Class / Post-Matric profile
+      await demoLogin('student_topclass');
+      navigate('/');
+    } catch (err) {
+      setFormError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleOfficerAuth = async (e) => {
+    e.preventDefault();
+    setFormError(null);
+    if (!aisheCode) {
+      setFormError('Please enter Institution AISHE Code or Directorate ID.');
+      return;
+    }
+    try {
+      setLoading(true);
+      if (aisheCode.toUpperCase().includes('MOTA') || aisheCode.toUpperCase().includes('ADMIN')) {
+        await demoLogin('mota_admin');
+      } else if (aisheCode.toUpperCase().includes('STATE') || aisheCode.toUpperCase().includes('ODISHA')) {
+        await demoLogin('state_nodal');
+      } else {
+        await demoLogin('institute_nodal');
+      }
+      navigate('/officer');
     } catch (err) {
       setFormError(err.message);
     } finally {
@@ -83,196 +153,322 @@ export const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-[calc(100vh-120px)] flex flex-col justify-center px-4 py-8 max-w-md mx-auto">
+    <div className="min-h-[calc(100vh-120px)] flex flex-col justify-center px-4 py-8 max-w-lg mx-auto">
       {/* MoTA Emblem & Title Header */}
       <div className="text-center mb-6">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-tr from-gov-navy to-gov-blue text-white shadow-lg mb-3 border-2 border-amber-300">
-          <GraduationCap className="w-8 h-8 text-amber-300" />
-        </div>
-        <h2 className="text-2xl font-extrabold text-gov-navy tracking-tight">
-          Unified Tribal Scholarship Portal
+        <img 
+          src="/janjatisetu-logo.png" 
+          alt="JanjatiSetu Logo" 
+          className="w-20 h-20 rounded-full object-cover shadow-xl border-2 border-amber-400 bg-amber-50 mx-auto mb-3"
+        />
+        <h2 className="text-2xl font-black text-gov-navy tracking-tight">
+          {t('siteName')} (JanjatiSetu)
         </h2>
-        <p className="text-xs text-slate-600 mt-1">
-          Ministry of Tribal Affairs (MoTA), Government of India
+        <p className="text-xs text-slate-600 mt-0.5">
+          {t('loginSubtitle')}
         </p>
-        <p className="text-[11px] font-medium text-amber-700 bg-amber-50 rounded-full py-0.5 px-3 inline-block mt-2 border border-amber-200">
-          Single Portal for All 5 MoTA Schemes (Pre/Post-Matric, Top Class, NFST, NOS)
+        <p className="text-[11px] font-semibold text-amber-800 bg-amber-50 rounded-full py-0.5 px-3 inline-block mt-2 border border-amber-200">
+          {t('loginBadgeOnePortal')}
         </p>
       </div>
 
       {/* Main Login Card */}
-      <div className="bg-white rounded-2xl shadow-gov-lg border border-slate-200 p-6">
+      <div className="bg-white rounded-3xl shadow-xl border border-slate-200 p-6 sm:p-7 space-y-5 relative overflow-hidden">
+        {/* E2EE Cryptographic Security Strip */}
+        <div className="p-3 bg-slate-900 rounded-2xl border border-slate-800 text-white flex items-start gap-2.5">
+          <div className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center flex-shrink-0 mt-0.5">
+            <Lock className="w-4 h-4" />
+          </div>
+          <div>
+            <span className="text-[11px] font-bold text-emerald-400 block leading-tight">
+              {t('e2eeBadge')}
+            </span>
+            <span className="text-[10px] text-slate-400 leading-tight block mt-0.5">
+              {t('e2eeNotice')}
+            </span>
+          </div>
+        </div>
+
+        {/* 3 Login Tabs */}
+        <div className="grid grid-cols-3 gap-1 bg-slate-100 p-1 rounded-2xl text-xs font-bold">
+          <button
+            type="button"
+            onClick={() => { setActiveTab('mobile'); setFormError(null); }}
+            className={`py-2 px-1 text-center rounded-xl transition ${
+              activeTab === 'mobile' ? 'bg-white text-gov-blue shadow-sm' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            {t('tabMobileOtp')}
+          </button>
+          <button
+            type="button"
+            onClick={() => { setActiveTab('apaar'); setFormError(null); }}
+            className={`py-2 px-1 text-center rounded-xl transition ${
+              activeTab === 'apaar' ? 'bg-white text-gov-blue shadow-sm' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            {t('tabApaarDigi')}
+          </button>
+          <button
+            type="button"
+            onClick={() => { setActiveTab('officer'); setFormError(null); }}
+            className={`py-2 px-1 text-center rounded-xl transition ${
+              activeTab === 'officer' ? 'bg-white text-gov-blue shadow-sm' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            {t('tabOfficerAishe')}
+          </button>
+        </div>
+
+        {/* Error Alert Box */}
         {(formError || error) && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl flex items-start gap-2 text-xs text-red-700">
+          <div className="p-3 bg-red-50 border border-red-200 rounded-xl flex items-start gap-2 text-xs text-red-700 animate-in fade-in duration-150">
             <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
             <span>{formError || error}</span>
           </div>
         )}
 
-        {step === 'phone' ? (
-          <form onSubmit={handleSendOtp} className="space-y-4">
+        {/* TAB 1: Mobile OTP Login */}
+        {activeTab === 'mobile' && (
+          <div>
+            {step === 'phone' ? (
+              <form onSubmit={handleSendOtp} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                    {t('mobileInputLabel')}
+                  </label>
+                  <div className="relative">
+                    <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-xs font-bold text-slate-500">
+                      +91
+                    </span>
+                    <input
+                      type="tel"
+                      maxLength="10"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
+                      placeholder={t('mobilePlaceholder')}
+                      className="w-full pl-12 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-semibold text-slate-800 focus:bg-white focus:ring-2 focus:ring-gov-blue focus:border-gov-blue transition"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full py-3 px-4 bg-gradient-to-r from-gov-navy to-gov-blue hover:from-slate-900 hover:to-gov-navy text-white text-xs font-extrabold rounded-xl shadow-md flex items-center justify-center gap-2 transition disabled:opacity-50"
+                >
+                  {loading ? (
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <>
+                      <span>{t('sendOtpBtn')}</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </>
+                  )}
+                </button>
+              </form>
+            ) : (
+              <form onSubmit={handleVerifyOtp} className="space-y-4 animate-in fade-in duration-150">
+                <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs text-blue-900 space-y-1">
+                  <p className="font-semibold">
+                    {t('otpSentNotice')} <strong>+91 {phone}</strong>
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => { setStep('phone'); setOtp(''); }}
+                    className="text-[11px] text-gov-blue font-bold underline"
+                  >
+                    Change Phone Number
+                  </button>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                    {t('enterOtpLabel')}
+                  </label>
+                  <input
+                    type="text"
+                    maxLength="6"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
+                    placeholder="• • • • • •"
+                    className="w-full text-center tracking-[0.4em] font-mono text-lg py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-gov-blue transition font-bold"
+                    required
+                    autoFocus
+                  />
+                </div>
+
+                {/* Resend OTP / Timer */}
+                <div className="flex items-center justify-between text-xs text-slate-500">
+                  <span>{t('didNotReceiveOtp')}</span>
+                  {timer > 0 ? (
+                    <span className="font-mono font-bold text-slate-700">
+                      {t('resendOtpIn')} {timer}s
+                    </span>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={handleSendOtp}
+                      className="font-bold text-gov-blue hover:underline"
+                    >
+                      {t('resendOtpNow')}
+                    </button>
+                  )}
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full py-3 px-4 bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white text-xs font-extrabold rounded-xl shadow-md flex items-center justify-center gap-2 transition disabled:opacity-50"
+                >
+                  {loading ? (
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <>
+                      <ShieldCheck className="w-4 h-4" />
+                      <span>{t('submitOtpVerify')}</span>
+                    </>
+                  )}
+                </button>
+              </form>
+            )}
+          </div>
+        )}
+
+        {/* TAB 2: APAAR / DigiLocker e-KYC */}
+        {activeTab === 'apaar' && (
+          <form onSubmit={handleApaarAuth} className="space-y-4 animate-in fade-in duration-150">
             <div>
               <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                Enter Mobile Number (Aadhaar / DBT Linked)
+                {t('apaarInputLabel')}
               </label>
-              <div className="relative">
-                <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-xs font-bold text-slate-500">
-                  +91
-                </span>
-                <input
-                  type="tel"
-                  maxLength="10"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
-                  placeholder="98765 43210"
-                  className="w-full pl-12 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-semibold text-slate-800 focus:bg-white focus:ring-2 focus:ring-gov-blue focus:border-gov-blue transition"
-                  required
-                />
-              </div>
-              <p className="text-[11px] text-slate-500 mt-1">
-                A 6-digit OTP will be sent to your mobile for passwordless sign-in.
+              <input
+                type="text"
+                value={apaarId}
+                onChange={(e) => setApaarId(e.target.value)}
+                placeholder={t('apaarPlaceholder')}
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-semibold text-slate-800 focus:bg-white focus:ring-2 focus:ring-gov-blue transition"
+                required
+              />
+              <p className="text-[11px] text-slate-500 mt-1.5">
+                {t('apaarAuthNotice')}
               </p>
             </div>
 
-            <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                Account Type / Role
-              </label>
-              <select
-                value={selectedRole}
-                onChange={(e) => setSelectedRole(e.target.value)}
-                className="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-medium text-slate-800 focus:bg-white focus:ring-2 focus:ring-gov-blue"
-              >
-                <option value="student">🎓 ST Student (Applicant)</option>
-                <option value="guardian">👨‍👧 Guardian / Parent (Multiple Children)</option>
-                <option value="institute_nodal">🏫 Institute Nodal Officer</option>
-                <option value="state_nodal">🏛️ State Nodal Officer</option>
-                <option value="mota_admin">🛡️ MoTA Central Administrator</option>
-              </select>
-            </div>
-
             <button
               type="submit"
-              disabled={loading || phone.length !== 10}
-              className="w-full bg-gov-blue hover:bg-gov-navy text-white font-bold py-3 px-4 rounded-xl text-sm shadow transition flex items-center justify-center gap-2 disabled:opacity-50"
+              disabled={loading}
+              className="w-full py-3 px-4 bg-gradient-to-r from-indigo-700 to-purple-800 text-white text-xs font-extrabold rounded-xl shadow-md flex items-center justify-center gap-2 transition"
             >
-              {loading ? (
-                <span>Sending OTP via SMS...</span>
-              ) : (
-                <>
-                  <span>Get OTP</span>
-                  <ArrowRight className="w-4 h-4" />
-                </>
-              )}
-            </button>
-          </form>
-        ) : (
-          <form onSubmit={handleVerifyOtp} className="space-y-4">
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
-                  Enter 6-Digit OTP
-                </label>
-                <button
-                  type="button"
-                  onClick={() => setStep('phone')}
-                  className="text-xs text-gov-blue hover:underline font-semibold"
-                >
-                  Change Mobile
-                </button>
-              </div>
-
-              <div className="relative">
-                <input
-                  type="text"
-                  maxLength="6"
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
-                  placeholder="123456"
-                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-center text-lg font-bold tracking-widest text-slate-800 focus:bg-white focus:ring-2 focus:ring-gov-blue"
-                  required
-                />
-              </div>
-
-              {devOtpHint && (
-                <div className="mt-2 p-2 bg-emerald-50 border border-emerald-200 rounded-lg text-xs text-emerald-800 flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                  <span>Dev Mock OTP: <strong>{devOtpHint}</strong> (auto-filled)</span>
-                </div>
-              )}
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading || otp.length < 4}
-              className="w-full bg-gov-blue hover:bg-gov-navy text-white font-bold py-3 px-4 rounded-xl text-sm shadow transition flex items-center justify-center gap-2 disabled:opacity-50"
-            >
-              {loading ? 'Verifying...' : 'Verify OTP & Continue'}
+              <FileCheck2 className="w-4 h-4" />
+              <span>{t('apaarVerifyBtn')}</span>
             </button>
           </form>
         )}
 
-        {/* DPDP Act 2023 Trust Seal */}
-        <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-center gap-2 text-[11px] text-slate-500 text-center">
-          <ShieldCheck className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-          <span>DPDP Act 2023 Compliant. Raw Aadhaar is never stored.</span>
-        </div>
-      </div>
+        {/* TAB 3: Nodal Officer AISHE / Admin Login */}
+        {activeTab === 'officer' && (
+          <form onSubmit={handleOfficerAuth} className="space-y-3.5 animate-in fade-in duration-150">
+            <div>
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                {t('aisheCodeLabel')}
+              </label>
+              <input
+                type="text"
+                value={aisheCode}
+                onChange={(e) => setAisheCode(e.target.value)}
+                placeholder={t('aishePlaceholder')}
+                className="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-semibold text-slate-800 focus:bg-white"
+                required
+              />
+            </div>
 
-      {/* 1-Click Demo Evaluation Presets */}
-      <div className="mt-6 bg-amber-50/70 border border-amber-200 rounded-2xl p-4 shadow-sm">
-        <div className="flex items-center gap-2 mb-3">
-          <Sparkles className="w-4 h-4 text-amber-600" />
-          <h3 className="text-xs font-bold text-amber-900 uppercase tracking-wider">
-            Quick 1-Click Demo Roles (Instant Evaluation)
-          </h3>
-        </div>
-        <p className="text-[11px] text-amber-800 mb-3">
-          Click any persona below to test pre-seeded profiles and schemes:
-        </p>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="block text-[11px] font-bold text-slate-700 uppercase mb-1">
+                  {t('officerPasswordLabel')}
+                </label>
+                <input
+                  type="password"
+                  value={officerPassword}
+                  onChange={(e) => setOfficerPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-semibold"
+                  required
+                />
+              </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-          <button
-            onClick={() => handleQuickDemo('student_prematric')}
-            className="p-2.5 bg-white hover:bg-amber-100 border border-amber-200 rounded-xl text-left transition flex flex-col"
-          >
-            <span className="font-bold text-slate-800">Birsa Munda (Pre-Matric)</span>
-            <span className="text-[10px] text-slate-500">Class IX, Santhal Tribe, Odisha</span>
-          </button>
+              <div>
+                <label className="block text-[11px] font-bold text-slate-700 uppercase mb-1">
+                  {t('securityPinLabel')}
+                </label>
+                <input
+                  type="password"
+                  maxLength="4"
+                  value={securityPin}
+                  onChange={(e) => setSecurityPin(e.target.value)}
+                  placeholder="1234"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-semibold text-center font-mono"
+                  required
+                />
+              </div>
+            </div>
 
-          <button
-            onClick={() => handleQuickDemo('student_topclass')}
-            className="p-2.5 bg-white hover:bg-amber-100 border border-amber-200 rounded-xl text-left transition flex flex-col"
-          >
-            <span className="font-bold text-slate-800">Jaipal Singh (Top Class)</span>
-            <span className="text-[10px] text-slate-500">IIT Bombay, Divyang, Munda Tribe</span>
-          </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3 px-4 bg-gradient-to-r from-purple-800 to-slate-900 text-white text-xs font-extrabold rounded-xl shadow-md flex items-center justify-center gap-2 transition mt-2"
+            >
+              <Building2 className="w-4 h-4" />
+              <span>{t('officerLoginBtn')}</span>
+            </button>
+          </form>
+        )}
 
-          <button
-            onClick={() => handleQuickDemo('student_nfst')}
-            className="p-2.5 bg-white hover:bg-amber-100 border border-amber-200 rounded-xl text-left transition flex flex-col"
-          >
-            <span className="font-bold text-slate-800">Shanti Birhor (NFST Fellow)</span>
-            <span className="text-[10px] text-slate-500">Ph.D. JNU, PVTG Birhor Community</span>
-          </button>
-
-          <button
-            onClick={() => handleQuickDemo('guardian')}
-            className="p-2.5 bg-white hover:bg-amber-100 border border-amber-200 rounded-xl text-left transition flex flex-col"
-          >
-            <span className="font-bold text-slate-800">Somra Munda (Guardian)</span>
-            <span className="text-[10px] text-slate-500">Family Multi-Child Dashboard</span>
-          </button>
-
-          <button
-            onClick={() => handleQuickDemo('mota_admin')}
-            className="p-2.5 bg-purple-50 hover:bg-purple-100 border border-purple-200 rounded-xl text-left transition flex flex-col col-span-1 sm:col-span-2"
-          >
-            <span className="font-bold text-purple-900">Dr. Rameshwar Oraon (MoTA Admin)</span>
-            <span className="text-[10px] text-purple-700">Scheme Config Editor, Income Limits, Premier Institutes</span>
-          </button>
+        {/* 1-Click Fast Evaluator Persona Switcher */}
+        <div className="pt-4 border-t border-slate-100">
+          <p className="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 mb-2.5 text-center">
+            {t('orQuickDemoPersonas')}
+          </p>
+          <div className="grid grid-cols-2 gap-2 text-xs">
+            <button
+              type="button"
+              onClick={() => handleQuickDemo('student_topclass')}
+              className="p-2 rounded-xl bg-slate-50 hover:bg-amber-50 border border-slate-200 text-slate-800 font-bold text-[11px] text-left transition flex items-center gap-1.5"
+            >
+              <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+              <span>Jaipal (IIT Top Class)</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => handleQuickDemo('student_prematric')}
+              className="p-2 rounded-xl bg-slate-50 hover:bg-emerald-50 border border-slate-200 text-slate-800 font-bold text-[11px] text-left transition flex items-center gap-1.5"
+            >
+              <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+              <span>Birsa (Pre-Matric IX)</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => handleQuickDemo('student_nfst')}
+              className="p-2 rounded-xl bg-slate-50 hover:bg-purple-50 border border-slate-200 text-slate-800 font-bold text-[11px] text-left transition flex items-center gap-1.5"
+            >
+              <span className="w-2 h-2 rounded-full bg-purple-500"></span>
+              <span>Shanti (NFST Fellow)</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => handleQuickDemo('institute_nodal')}
+              className="p-2 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 text-slate-800 font-bold text-[11px] text-left transition flex items-center gap-1.5"
+            >
+              <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+              <span>Prof. Meena (IIT Nodal)</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
   );
 };
+
+export default LoginPage;

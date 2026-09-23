@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLanguage } from '../../context/LanguageContext.jsx';
 import { 
   Building2, 
   IndianRupee, 
@@ -10,39 +11,41 @@ import {
 } from 'lucide-react';
 
 export const TrustStatsBar = () => {
+  const { t } = useLanguage();
+
   const stats = [
     {
-      value: '5',
-      label: 'Official MoTA Schemes',
-      subtext: 'Single-Window Discovery',
+      value: t('stat1Val'),
+      label: t('stat1Lbl'),
+      subtext: t('stat1Sub'),
       icon: Award,
       color: 'text-amber-500'
     },
     {
-      value: '₹1,420+ Cr',
-      label: 'Disbursed via PFMS DBT',
-      subtext: 'Direct to Bank Account',
+      value: t('stat2Val'),
+      label: t('stat2Lbl'),
+      subtext: t('stat2Sub'),
       icon: IndianRupee,
       color: 'text-emerald-500'
     },
     {
-      value: '38.5 Lakh+',
-      label: 'Tribal Scholars Funded',
-      subtext: 'Across 36 States & UTs',
+      value: t('stat3Val'),
+      label: t('stat3Lbl'),
+      subtext: t('stat3Sub'),
       icon: Users,
       color: 'text-blue-500'
     },
     {
-      value: '246',
-      label: 'Premier Institutes',
-      subtext: 'IITs, IIMs, AIIMS, NITs',
+      value: t('stat4Val'),
+      label: t('stat4Lbl'),
+      subtext: t('stat4Sub'),
       icon: Building2,
       color: 'text-purple-500'
     },
     {
-      value: '100%',
-      label: 'DigiLocker Verified',
-      subtext: 'Zero Manual Paper Upload',
+      value: t('stat5Val'),
+      label: t('stat5Lbl'),
+      subtext: t('stat5Sub'),
       icon: ShieldCheck,
       color: 'text-teal-500'
     }
@@ -50,7 +53,6 @@ export const TrustStatsBar = () => {
 
   return (
     <section className="bg-slate-950 text-white border-y border-slate-800 py-10 sm:py-12 relative overflow-hidden">
-      {/* Subtle Background Elements */}
       <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:16px_16px]"></div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">

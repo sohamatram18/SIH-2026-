@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '../../context/LanguageContext.jsx';
 import { 
   HelpCircle, 
   ChevronDown, 
@@ -13,6 +14,7 @@ import {
 
 export const FaqAccordionSection = ({ onOpenJago }) => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [activeCategory, setActiveCategory] = useState('ALL');
   const [expandedId, setExpandedId] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
@@ -22,14 +24,14 @@ export const FaqAccordionSection = ({ onOpenJago }) => {
       id: 1,
       category: 'ELIGIBILITY',
       question: 'What is the "One-Scholarship-at-a-Time" statutory rule?',
-      answer: 'Under Central Government financial discipline rules, a tribal student is entitled to receive only ONE Central or State scholarship concurrently for the same course of study. Our AI conflict engine checks cross-scheme registrations in real time so your application is never flagged for duplicate claim clawbacks.',
+      answer: 'Under Central Government financial discipline rules, a tribal student is entitled to receive only ONE Central or State scholarship concurrently for the same course of study. JanjatiSetu AI conflict engine checks cross-scheme registrations in real time so your application is never flagged for duplicate claim clawbacks.',
       tags: ['Statutory Rule', 'Conflict Engine']
     },
     {
       id: 2,
       category: 'DIGILOCKER',
       question: 'Do I need to scan and upload physical paper certificates?',
-      answer: 'No! The MoTA Unified Portal uses a 100% paperless DigiLocker PKI integration. Simply link your Aadhaar, and the portal cryptographically pulls your ST Caste Certificate, Family Income Proof, and 10th/12th Marksheets directly from state e-District databases.',
+      answer: 'No! JanjatiSetu uses a 100% paperless DigiLocker PKI integration. Simply link your Aadhaar, and the portal cryptographically pulls your ST Caste Certificate, Family Income Proof, and 10th/12th Marksheets directly from state e-District databases.',
       tags: ['DigiLocker', 'Paperless']
     },
     {
@@ -84,13 +86,13 @@ export const FaqAccordionSection = ({ onOpenJago }) => {
         <div className="text-center space-y-3 mb-10">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100 text-gov-blue text-xs font-extrabold tracking-wide uppercase">
             <HelpCircle className="w-3.5 h-3.5" />
-            Frequently Asked Questions
+            {t('faqBadge')}
           </div>
           <h2 className="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight">
-            Common Questions & Rules Explained
+            {t('faqTitle')}
           </h2>
           <p className="text-xs sm:text-sm text-slate-500">
-            Clear guidelines on Central MoTA eligibility, DigiLocker integration, and PFMS DBT payments.
+            {t('faqDesc')}
           </p>
         </div>
 
@@ -103,7 +105,7 @@ export const FaqAccordionSection = ({ onOpenJago }) => {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search FAQ by keyword (e.g. laptop, income, DigiLocker, PFMS, bank)..."
+              placeholder={t('searchFaqPlaceholder')}
               className="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-100 focus:border-gov-blue transition"
             />
           </div>
@@ -111,12 +113,12 @@ export const FaqAccordionSection = ({ onOpenJago }) => {
           {/* Category Tabs */}
           <div className="flex flex-wrap items-center gap-1.5 pt-1">
             {[
-              { key: 'ALL', label: 'All Categories' },
-              { key: 'ELIGIBILITY', label: 'Eligibility & Rules' },
-              { key: 'DIGILOCKER', label: 'DigiLocker & Docs' },
-              { key: 'TOP_CLASS', label: 'Top Class & Laptop' },
-              { key: 'PFMS', label: 'PFMS DBT & Bank' },
-              { key: 'NOS', label: 'Overseas NOS' }
+              { key: 'ALL', label: t('allCategories') },
+              { key: 'ELIGIBILITY', label: t('eligibilityRulesTab') },
+              { key: 'DIGILOCKER', label: t('digilockerDocsTab') },
+              { key: 'TOP_CLASS', label: t('topClassLaptopTab') },
+              { key: 'PFMS', label: t('pfmsBankTab') },
+              { key: 'NOS', label: t('overseasNosTab') }
             ].map(cat => (
               <button
                 key={cat.key}
@@ -181,7 +183,7 @@ export const FaqAccordionSection = ({ onOpenJago }) => {
         <div className="mt-10 bg-gradient-to-r from-slate-900 to-gov-navy text-white rounded-3xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
           <div>
             <h4 className="font-extrabold text-sm sm:text-base">
-              Still have questions about your application?
+              {t('stillHaveQuestions')}
             </h4>
             <p className="text-xs text-slate-300 mt-0.5">
               Ask JAGO AI in your native tribal dialect or submit an official grievance inquiry.
@@ -191,7 +193,7 @@ export const FaqAccordionSection = ({ onOpenJago }) => {
             onClick={onOpenJago}
             className="flex-shrink-0 px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs flex items-center gap-1.5 transition"
           >
-            <span>Ask JAGO Voice AI</span>
+            <span>{t('askJagoVoiceAi')}</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>

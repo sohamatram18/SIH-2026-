@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '../../context/LanguageContext.jsx';
 import { 
   ShieldCheck, 
   Cpu, 
@@ -16,14 +17,15 @@ import {
 
 export const HowItWorksSection = ({ onOpenJago }) => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [activeStep, setActiveStep] = useState(0);
 
   const steps = [
     {
       stepNumber: '01',
-      title: 'Profile & DigiLocker e-KYC',
-      subtitle: 'Zero Physical Paperwork',
-      desc: 'Link your Aadhaar securely via DigiLocker. The portal automatically pulls and cryptographically validates your ST Tribe Certificate, Family Income, and 10th/12th Marksheets from State e-District databases.',
+      title: t('step1Title'),
+      subtitle: t('step1Sub'),
+      desc: t('step1Desc'),
       icon: ShieldCheck,
       color: 'from-blue-600 to-indigo-600',
       badge: '1-Click e-KYC',
@@ -33,13 +35,13 @@ export const HowItWorksSection = ({ onOpenJago }) => {
         'State e-District & DigiLocker direct sync',
         'Permanent digital wallet for future renewals'
       ],
-      action: { label: 'Open DigiLocker Vault', link: '/wallet' }
+      action: { label: t('step1Action'), link: '/wallet' }
     },
     {
       stepNumber: '02',
-      title: 'AI Scheme Match & Conflict Check',
-      subtitle: 'Statutory 1-Scheme Enforcement',
-      desc: 'Our eligibility engine verifies your AISHE institution, degree level, and income threshold. The real-time conflict prevention engine guarantees you never face duplicate claim rejections or clawbacks.',
+      title: t('step2Title'),
+      subtitle: t('step2Sub'),
+      desc: t('step2Desc'),
       icon: Cpu,
       color: 'from-amber-600 to-orange-600',
       badge: 'Conflict-Free Match',
@@ -49,13 +51,13 @@ export const HowItWorksSection = ({ onOpenJago }) => {
         'Cross-scheme duplicate claim prevention',
         'PVTG & Divyang priority inclusion scoring'
       ],
-      action: { label: 'Check 5 MoTA Schemes', link: '/schemes' }
+      action: { label: t('step2Action'), link: '/schemes' }
     },
     {
       stepNumber: '03',
-      title: '1-Click Apply & PFMS Direct DBT',
-      subtitle: 'Aadhaar-Seeded Bank Credit',
-      desc: 'Submit in under 2 minutes. Institutional and State Nodal Officers process applications with non-blocking timelines. Once sanctioned, scholarship funds transfer directly to your bank account via PFMS and NPCI APBS.',
+      title: t('step3Title'),
+      subtitle: t('step3Sub'),
+      desc: t('step3Desc'),
       icon: CreditCard,
       color: 'from-emerald-600 to-teal-600',
       badge: '100% Direct DBT',
@@ -65,13 +67,12 @@ export const HowItWorksSection = ({ onOpenJago }) => {
         'SMS & Multilingual JAGO AI voice updates',
         'Zero-touch direct bank account transfer'
       ],
-      action: { label: 'Track PFMS DBT Status', link: '/payments' }
+      action: { label: t('step3Action'), link: '/payments' }
     }
   ];
 
   return (
     <section className="py-16 sm:py-24 bg-slate-50 border-t border-slate-200/80 relative overflow-hidden">
-      {/* Background Decorative Pattern */}
       <div className="absolute inset-0 opacity-40 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:24px_24px]"></div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -79,19 +80,18 @@ export const HowItWorksSection = ({ onOpenJago }) => {
         <div className="text-center max-w-3xl mx-auto space-y-3 mb-14">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100 text-gov-blue text-xs font-extrabold tracking-wide uppercase">
             <Sparkles className="w-3.5 h-3.5" />
-            Simple 3-Step Process
+            {t('howItWorksBadge')}
           </div>
           <h2 className="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight">
-            How Tribal Students Get Funded
+            {t('howItWorksTitle')}
           </h2>
           <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-            From digital document fetch to direct bank transfer — a streamlined, transparent journey designed for ST scholars and families.
+            {t('howItWorksSub')}
           </p>
         </div>
 
         {/* 3 Steps Visual Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 relative">
-          {/* Connector Line (Desktop) */}
           <div className="hidden md:block absolute top-24 left-[15%] right-[15%] h-0.5 bg-gradient-to-r from-blue-300 via-amber-300 to-emerald-300 z-0"></div>
 
           {steps.map((step, idx) => {
@@ -106,7 +106,6 @@ export const HowItWorksSection = ({ onOpenJago }) => {
                 }`}
               >
                 <div>
-                  {/* Top Step Number & Icon Header */}
                   <div className="flex items-center justify-between mb-6">
                     <div className={`w-14 h-14 rounded-2xl bg-gradient-to-tr ${step.color} text-white flex items-center justify-center shadow-lg shadow-blue-500/10`}>
                       <Icon className="w-7 h-7" />
@@ -121,7 +120,6 @@ export const HowItWorksSection = ({ onOpenJago }) => {
                     </div>
                   </div>
 
-                  {/* Step Title & Description */}
                   <div className="space-y-2 mb-6">
                     <span className="text-[11px] font-bold text-gov-blue tracking-wide uppercase">
                       {step.subtitle}
@@ -134,7 +132,6 @@ export const HowItWorksSection = ({ onOpenJago }) => {
                     </p>
                   </div>
 
-                  {/* Highlights Bullet List */}
                   <div className="space-y-2 py-4 border-t border-slate-100">
                     {step.highlights.map((h, i) => (
                       <div key={i} className="flex items-start gap-2 text-xs text-slate-700">
@@ -145,7 +142,6 @@ export const HowItWorksSection = ({ onOpenJago }) => {
                   </div>
                 </div>
 
-                {/* Card Bottom CTA */}
                 <div className="pt-4 border-t border-slate-100 mt-4">
                   <button
                     onClick={() => navigate(step.action.link)}
@@ -160,7 +156,7 @@ export const HowItWorksSection = ({ onOpenJago }) => {
           })}
         </div>
 
-        {/* Security / Compliance Guarantee Box */}
+        {/* Security Box */}
         <div className="mt-12 bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold flex-shrink-0">
@@ -168,10 +164,10 @@ export const HowItWorksSection = ({ onOpenJago }) => {
             </div>
             <div>
               <h4 className="font-extrabold text-xs sm:text-sm text-slate-900">
-                Statutory Data Privacy & Non-Blocking Verification
+                {t('dpdpGuarTitle')}
               </h4>
               <p className="text-[11px] text-slate-500">
-                12-digit Aadhaar numbers are never stored in plain text. Verification adapter timeouts never block student application submission.
+                {t('dpdpGuarDesc')}
               </p>
             </div>
           </div>
@@ -180,7 +176,7 @@ export const HowItWorksSection = ({ onOpenJago }) => {
             className="flex-shrink-0 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs flex items-center gap-1.5 transition"
           >
             <Zap className="w-3.5 h-3.5" />
-            <span>Need Help? Ask JAGO</span>
+            <span>{t('askJago')}</span>
           </button>
         </div>
       </div>

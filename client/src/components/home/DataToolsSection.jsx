@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '../../context/LanguageContext.jsx';
 import { 
   Calculator, 
   Layers, 
@@ -17,12 +18,13 @@ import {
 
 export const DataToolsSection = ({ onOpenCompare }) => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   // Calculator State
-  const [selectedScheme, setSelectedScheme] = useState('TOP_CLASS'); // 'PRE_MATRIC', 'POST_MATRIC', 'TOP_CLASS', 'NFST', 'NOS'
+  const [selectedScheme, setSelectedScheme] = useState('TOP_CLASS');
   const [isHosteller, setIsHosteller] = useState(true);
   const [isDivyang, setIsDivyang] = useState(false);
-  const [annualTuition, setAnnualTuition] = useState(125000); // in Rupees
+  const [annualTuition, setAnnualTuition] = useState(125000);
   const [claimLaptop, setClaimLaptop] = useState(true);
 
   // Calculation Logic
@@ -31,10 +33,9 @@ export const DataToolsSection = ({ onOpenCompare }) => {
     let maintenance = 0;
     let books = 0;
     let hardware = 0;
-    let currencySymbol = '₹';
 
     if (selectedScheme === 'PRE_MATRIC') {
-      tuition = 0; // Govt school fees covered
+      tuition = 0;
       maintenance = isHosteller ? 7000 : 3500;
       if (isDivyang) maintenance += Math.round(maintenance * 0.1);
       books = 1000;
@@ -46,32 +47,31 @@ export const DataToolsSection = ({ onOpenCompare }) => {
       books = 2500;
       hardware = 0;
     } else if (selectedScheme === 'TOP_CLASS') {
-      tuition = Number(annualTuition); // 100% full fee reimbursed
-      maintenance = 36000; // ₹3,000 / month
+      tuition = Number(annualTuition);
+      maintenance = 36000;
       books = 5000;
       hardware = claimLaptop ? 45000 : 0;
       if (isDivyang) maintenance += 3000;
     } else if (selectedScheme === 'NFST') {
       tuition = Number(annualTuition);
-      maintenance = 31000 * 12; // JRF ₹3.72L / year
-      books = 12000; // Contingency
+      maintenance = 31000 * 12;
+      books = 12000;
       hardware = 0;
     } else if (selectedScheme === 'NOS') {
       tuition = Number(annualTuition);
-      maintenance = 1280000; // Approx equivalent of USD 15,400 in INR
+      maintenance = 1280000;
       books = 15000;
       hardware = 0;
     }
 
     const total = tuition + maintenance + books + hardware;
-    return { tuition, maintenance, books, hardware, total, currencySymbol };
+    return { tuition, maintenance, books, hardware, total };
   };
 
   const breakup = computeBreakup();
 
   return (
     <section id="calculator-section" className="py-16 sm:py-24 bg-slate-900 text-white relative overflow-hidden">
-      {/* Background Lighting */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none"></div>
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-amber-600/10 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -80,13 +80,13 @@ export const DataToolsSection = ({ onOpenCompare }) => {
         <div className="text-center max-w-3xl mx-auto space-y-3 mb-14">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-extrabold tracking-wide uppercase border border-amber-400/30">
             <Calculator className="w-3.5 h-3.5" />
-            Interactive Tools & Predictors
+            {t('interactiveToolsBadge')}
           </div>
           <h2 className="text-2xl sm:text-4xl font-black tracking-tight text-white">
-            Scholarship Allowance & Entitlement Calculator
+            {t('allowanceCalcTitle')}
           </h2>
           <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
-            Estimate your total financial entitlement — including tuition reimbursement, monthly living allowance, book grants, and one-time ₹45,000 laptop aid.
+            {t('allowanceCalcDesc')}
           </p>
         </div>
 
@@ -101,10 +101,10 @@ export const DataToolsSection = ({ onOpenCompare }) => {
                 </div>
                 <div>
                   <h3 className="font-extrabold text-sm sm:text-base text-white">
-                    Financial Entitlement Simulator
+                    {t('financialSimulator')}
                   </h3>
                   <p className="text-[11px] text-slate-400">
-                    Real-time calculation as per MoTA financial rules
+                    {t('financialSimSub')}
                   </p>
                 </div>
               </div>
@@ -129,7 +129,7 @@ export const DataToolsSection = ({ onOpenCompare }) => {
               {/* Select Scheme */}
               <div>
                 <label className="block text-xs font-bold text-slate-300 mb-2">
-                  Select Scholarship Scheme
+                  {t('selectSchemeLabel')}
                 </label>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {[
@@ -155,12 +155,12 @@ export const DataToolsSection = ({ onOpenCompare }) => {
                 </div>
               </div>
 
-              {/* Annual Tuition Fee Slider / Input */}
+              {/* Annual Tuition Fee Slider */}
               {selectedScheme !== 'PRE_MATRIC' && (
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <label className="text-xs font-bold text-slate-300">
-                      Annual Compulsory Course / Tuition Fee
+                      {t('annualTuitionLabel')}
                     </label>
                     <span className="font-mono text-xs font-extrabold text-amber-400 bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-700">
                       ₹{Number(annualTuition).toLocaleString('en-IN')}
@@ -183,35 +183,32 @@ export const DataToolsSection = ({ onOpenCompare }) => {
                 </div>
               )}
 
-              {/* Toggles (Hosteller, Divyang, Laptop Grant) */}
+              {/* Toggles */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-                {/* Hosteller Toggle */}
                 <div 
                   onClick={() => setIsHosteller(!isHosteller)}
                   className={`p-3 rounded-2xl border cursor-pointer transition flex items-center justify-between ${
                     isHosteller ? 'bg-blue-500/10 border-blue-400 text-blue-300' : 'bg-slate-900/60 border-slate-700 text-slate-400'
                   }`}
                 >
-                  <span className="text-xs font-bold">Hosteller (Living Away)</span>
+                  <span className="text-xs font-bold">{t('hostellerOption')}</span>
                   <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${isHosteller ? 'border-blue-400 bg-blue-500' : 'border-slate-500'}`}>
                     {isHosteller && <div className="w-1.5 h-1.5 rounded-full bg-white"></div>}
                   </div>
                 </div>
 
-                {/* Divyang Toggle */}
                 <div 
                   onClick={() => setIsDivyang(!isDivyang)}
                   className={`p-3 rounded-2xl border cursor-pointer transition flex items-center justify-between ${
                     isDivyang ? 'bg-purple-500/10 border-purple-400 text-purple-300' : 'bg-slate-900/60 border-slate-700 text-slate-400'
                   }`}
                 >
-                  <span className="text-xs font-bold">Divyang (40%+ Disability)</span>
+                  <span className="text-xs font-bold">{t('divyangOption')}</span>
                   <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${isDivyang ? 'border-purple-400 bg-purple-500' : 'border-slate-500'}`}>
                     {isDivyang && <div className="w-1.5 h-1.5 rounded-full bg-white"></div>}
                   </div>
                 </div>
 
-                {/* Laptop Grant Toggle (For Top Class) */}
                 {selectedScheme === 'TOP_CLASS' && (
                   <div 
                     onClick={() => setClaimLaptop(!claimLaptop)}
@@ -219,7 +216,7 @@ export const DataToolsSection = ({ onOpenCompare }) => {
                       claimLaptop ? 'bg-amber-500/10 border-amber-400 text-amber-300' : 'bg-slate-900/60 border-slate-700 text-slate-400'
                     }`}
                   >
-                    <span className="text-xs font-bold">₹45,000 Laptop Grant</span>
+                    <span className="text-xs font-bold">{t('laptopOption')}</span>
                     <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${claimLaptop ? 'border-amber-400 bg-amber-500' : 'border-slate-500'}`}>
                       {claimLaptop && <div className="w-1.5 h-1.5 rounded-full bg-white"></div>}
                     </div>
@@ -231,7 +228,7 @@ export const DataToolsSection = ({ onOpenCompare }) => {
               <div className="bg-slate-900/90 rounded-2xl p-5 border border-slate-700 space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-800">
                   <span className="text-xs text-slate-400 font-bold uppercase tracking-wider">
-                    Total Estimated Annual Entitlement
+                    {t('totalEstAnnual')}
                   </span>
                   <div className="text-2xl sm:text-3xl font-black text-amber-400">
                     ₹{breakup.total.toLocaleString('en-IN')}
@@ -242,19 +239,19 @@ export const DataToolsSection = ({ onOpenCompare }) => {
                 {/* Detailed Breakdown */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
                   <div className="bg-slate-800/60 p-2.5 rounded-xl border border-slate-700/60">
-                    <span className="text-slate-400 text-[10px]">Tuition Support</span>
+                    <span className="text-slate-400 text-[10px]">{t('tuitionSupport')}</span>
                     <p className="font-extrabold text-white mt-0.5">₹{breakup.tuition.toLocaleString('en-IN')}</p>
                   </div>
                   <div className="bg-slate-800/60 p-2.5 rounded-xl border border-slate-700/60">
-                    <span className="text-slate-400 text-[10px]">Living / Maintenance</span>
+                    <span className="text-slate-400 text-[10px]">{t('livingMaintenance')}</span>
                     <p className="font-extrabold text-emerald-400 mt-0.5">₹{breakup.maintenance.toLocaleString('en-IN')}</p>
                   </div>
                   <div className="bg-slate-800/60 p-2.5 rounded-xl border border-slate-700/60">
-                    <span className="text-slate-400 text-[10px]">Book & Stationery</span>
+                    <span className="text-slate-400 text-[10px]">{t('bookStationery')}</span>
                     <p className="font-extrabold text-blue-400 mt-0.5">₹{breakup.books.toLocaleString('en-IN')}</p>
                   </div>
                   <div className="bg-slate-800/60 p-2.5 rounded-xl border border-slate-700/60">
-                    <span className="text-slate-400 text-[10px]">Hardware / Laptop</span>
+                    <span className="text-slate-400 text-[10px]">{t('hardwareLaptop')}</span>
                     <p className="font-extrabold text-amber-400 mt-0.5">₹{breakup.hardware.toLocaleString('en-IN')}</p>
                   </div>
                 </div>
@@ -265,7 +262,7 @@ export const DataToolsSection = ({ onOpenCompare }) => {
                     onClick={() => navigate(`/apply/${selectedScheme}`)}
                     className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs flex items-center gap-2 transition"
                   >
-                    <span>Proceed with {selectedScheme} Claim</span>
+                    <span>{t('proceedClaim')}</span>
                     <ArrowRight className="w-4 h-4" />
                   </button>
                 </div>
@@ -273,9 +270,9 @@ export const DataToolsSection = ({ onOpenCompare }) => {
             </div>
           </div>
 
-          {/* Right Column: Comparison & DigiLocker Tool Cards (4 Cols) */}
+          {/* Right Column: Comparison & DigiLocker Tool Cards */}
           <div className="lg:col-span-4 space-y-5">
-            {/* Tool 1: Scheme Comparator Highlight Card */}
+            {/* Tool 1: Scheme Comparator Card */}
             <div className="bg-gradient-to-br from-blue-900/60 to-indigo-950/80 border border-blue-500/30 rounded-3xl p-6 shadow-xl space-y-4">
               <div className="w-12 h-12 rounded-2xl bg-blue-500/20 text-blue-300 border border-blue-400/30 flex items-center justify-center">
                 <Layers className="w-6 h-6" />
@@ -285,17 +282,17 @@ export const DataToolsSection = ({ onOpenCompare }) => {
                   Side-by-Side Matrix
                 </span>
                 <h3 className="font-extrabold text-base text-white mt-1">
-                  Scheme Comparator Tool
+                  {t('schemeComparator')}
                 </h3>
                 <p className="text-xs text-slate-300 mt-1 leading-relaxed">
-                  Compare 2 to 3 MoTA scholarships side-by-side across income caps, living grants, hardware entitlements, and required DigiLocker documents.
+                  {t('schemeComparatorSub')}
                 </p>
               </div>
               <button
                 onClick={onOpenCompare}
                 className="w-full py-2.5 px-4 rounded-xl bg-white hover:bg-slate-100 text-slate-950 font-bold text-xs flex items-center justify-center gap-2 transition shadow-md"
               >
-                <span>Launch Scheme Comparator</span>
+                <span>{t('launchComparator')}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
@@ -310,17 +307,17 @@ export const DataToolsSection = ({ onOpenCompare }) => {
                   Zero Physical Uploads
                 </span>
                 <h3 className="font-extrabold text-base text-white mt-1">
-                  DigiLocker Document Vault
+                  {t('digilockerVault')}
                 </h3>
                 <p className="text-xs text-slate-300 mt-1 leading-relaxed">
-                  Validate your Caste Certificate, Domicile & Income in seconds using PKI signatures from State e-District portals.
+                  {t('digilockerVaultSub')}
                 </p>
               </div>
               <button
                 onClick={() => navigate('/wallet')}
                 className="w-full py-2.5 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs flex items-center justify-center gap-2 transition shadow-md"
               >
-                <span>Open Digital Wallet</span>
+                <span>{t('openDigitalWallet')}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>

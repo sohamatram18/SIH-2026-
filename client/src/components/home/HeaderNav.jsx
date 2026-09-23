@@ -44,7 +44,7 @@ export const HeaderNav = ({ onOpenJago, onOpenCompare }) => {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [searchOpen, setSearchOpen] = useState(false);
-  const [activeMegaMenu, setActiveMegaMenu] = useState(null); // 'schemes' | 'institutes' | 'tools' | 'dbt' | 'services'
+  const [activeMegaMenu, setActiveMegaMenu] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileExpandedSection, setMobileExpandedSection] = useState(null);
   const [demoMenuOpen, setDemoMenuOpen] = useState(false);
@@ -54,6 +54,7 @@ export const HeaderNav = ({ onOpenJago, onOpenCompare }) => {
   const [unreadCount, setUnreadCount] = useState(0);
 
   const searchRef = useRef(null);
+  const langMenuRef = useRef(null);
   const megaMenuTimeoutRef = useRef(null);
 
   const isOfficer = user && ['institute_nodal', 'state_nodal', 'mota_admin'].includes(user.role);
@@ -91,11 +92,14 @@ export const HeaderNav = ({ onOpenJago, onOpenCompare }) => {
     }
   }, [user]);
 
-  // Handle outside click for search
+  // Handle outside click
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (searchRef.current && !searchRef.current.contains(e.target)) {
         setSearchOpen(false);
+      }
+      if (langMenuRef.current && !langMenuRef.current.contains(e.target)) {
+        setLangMenuOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -145,64 +149,60 @@ export const HeaderNav = ({ onOpenJago, onOpenCompare }) => {
     }
   };
 
+  const currentLangObj = languages.find(l => l.code === currentLanguage) || languages[0];
+
   return (
     <>
       <header className="sticky top-0 z-40 bg-white shadow-sm border-b border-slate-200">
         {/* Tri-color Accent Bar */}
         <div className="gov-tricolor-bar"></div>
 
-        {/* Top Government Strip (Careers360 / myScheme style top utility) */}
+        {/* Top Government Strip */}
         <div className="bg-slate-900 text-slate-200 text-xs px-3 sm:px-6 py-1.5 border-b border-slate-800">
           <div className="max-w-7xl mx-auto flex items-center justify-between">
             <div className="flex items-center gap-3">
               <span className="flex items-center gap-1.5 font-medium tracking-wide">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                Government of India | Ministry of Tribal Affairs (MoTA)
+                {t('govIndia')} | {t('ministryName')}
               </span>
               <span className="hidden md:inline text-slate-500">|</span>
               <span className="hidden md:inline text-slate-400">
-                Direct Benefit Transfer (DBT) Mission & DPDP Act 2023 Compliant
+                {t('dbtMissionCompliance')}
               </span>
             </div>
 
             <div className="flex items-center gap-3 sm:gap-4">
-              {/* Accessibility Shortcuts */}
-              <div className="hidden lg:flex items-center gap-2 text-slate-400">
-                <span className="hover:text-white cursor-pointer transition">A-</span>
-                <span className="hover:text-white cursor-pointer font-bold transition">A</span>
-                <span className="hover:text-white cursor-pointer font-bold transition">A+</span>
-                <span className="text-slate-600">|</span>
-              </div>
-
               {/* Language Switcher */}
-              <div className="relative">
+              <div ref={langMenuRef} className="relative">
                 <button
+                  type="button"
                   onClick={() => setLangMenuOpen(!langMenuOpen)}
-                  className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium transition"
+                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-800 hover:bg-slate-700 text-amber-300 font-bold text-xs transition border border-amber-400/30"
                   aria-label="Change Language"
                 >
                   <Globe className="w-3.5 h-3.5 text-amber-400" />
-                  <span>{languages.find(l => l.code === currentLanguage)?.native || 'English'}</span>
-                  <ChevronDown className="w-3 h-3 text-slate-400" />
+                  <span>{currentLangObj.native}</span>
+                  <ChevronDown className={`w-3 h-3 text-slate-400 transition-transform ${langMenuOpen ? 'rotate-180' : ''}`} />
                 </button>
 
                 {langMenuOpen && (
-                  <div className="absolute right-0 mt-1 w-44 bg-white rounded-lg shadow-xl border border-slate-200 py-1 text-slate-800 z-50">
+                  <div className="absolute right-0 mt-1 w-52 bg-white rounded-xl shadow-2xl border border-slate-200 py-1 text-slate-800 z-50 animate-in fade-in zoom-in-95 duration-100">
                     <div className="px-3 py-1.5 border-b border-slate-100 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                      Select Language / भाषा
+                      Select Language / भाषा चुनें
                     </div>
                     {languages.map((l) => (
                       <button
                         key={l.code}
+                        type="button"
                         onClick={() => {
                           setLanguage(l.code);
                           setLangMenuOpen(false);
                         }}
                         className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between hover:bg-amber-50 hover:text-amber-900 transition ${
-                          currentLanguage === l.code ? 'font-bold text-amber-800 bg-amber-50/50' : ''
+                          currentLanguage === l.code ? 'font-black text-amber-900 bg-amber-100/60' : 'text-slate-700'
                         }`}
                       >
-                        <span>{l.native}</span>
+                        <span className="font-bold">{l.native}</span>
                         <span className="text-[10px] text-slate-400">{l.name}</span>
                       </button>
                     ))}
@@ -213,12 +213,13 @@ export const HeaderNav = ({ onOpenJago, onOpenCompare }) => {
               {/* Demo Persona Switcher */}
               <div className="relative">
                 <button
+                  type="button"
                   onClick={() => setDemoMenuOpen(!demoMenuOpen)}
                   className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-500/20 to-amber-600/30 border border-amber-400/40 text-amber-300 font-medium hover:from-amber-500/30 hover:to-amber-600/40 transition"
                   title="Switch 9 Demo Roles"
                 >
                   <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                  <span className="hidden sm:inline">Role Switcher</span>
+                  <span className="hidden sm:inline">{t('roleSwitcher')}</span>
                   <span className="sm:hidden">Roles</span>
                   <ChevronDown className="w-3 h-3" />
                 </button>
@@ -227,17 +228,18 @@ export const HeaderNav = ({ onOpenJago, onOpenCompare }) => {
                   <div className="absolute right-0 mt-1 w-80 bg-white rounded-xl shadow-2xl border border-slate-200 py-2 text-slate-800 z-50 animate-in fade-in zoom-in-95 duration-100">
                     <div className="px-4 py-2 border-b border-slate-100 flex items-center justify-between bg-slate-50 rounded-t-xl">
                       <div>
-                        <p className="font-bold text-xs text-slate-800">1-Click Demo Personas</p>
-                        <p className="text-[10px] text-slate-500">Test all 5 schemes & officer consoles</p>
+                        <p className="font-bold text-xs text-slate-800">{t('demoPersonas')}</p>
+                        <p className="text-[10px] text-slate-500">{t('demoSub')}</p>
                       </div>
                       <span className="px-2 py-0.5 bg-amber-100 text-amber-800 font-semibold text-[10px] rounded-full">
-                        9 Personas
+                        {t('ninePersonas')}
                       </span>
                     </div>
                     <div className="max-h-72 overflow-y-auto py-1 divide-y divide-slate-100">
                       {demoRoles.map((role) => (
                         <button
                           key={role.key}
+                          type="button"
                           onClick={() => handleDemoSwitch(role.key)}
                           className="w-full text-left px-4 py-2 hover:bg-amber-50/70 transition flex items-center justify-between group"
                         >
@@ -265,30 +267,35 @@ export const HeaderNav = ({ onOpenJago, onOpenCompare }) => {
         {/* Main Brand & Global Search Bar */}
         <div className="bg-white px-3 sm:px-6 py-2.5 sm:py-3">
           <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
-            {/* Logo & National Emblem */}
+            {/* Logo & JanjatiSetu Name */}
             <div 
               onClick={() => navigate('/')} 
-              className="flex items-center gap-3 cursor-pointer flex-shrink-0"
+              className="flex items-center gap-3 cursor-pointer flex-shrink-0 group"
             >
-              <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-br from-amber-600 via-amber-700 to-amber-900 flex items-center justify-center font-bold text-white shadow-md border-2 border-amber-300 text-base sm:text-lg flex-shrink-0">
-                🇮🇳
-              </div>
+              <img 
+                src="/janjatisetu-logo.png" 
+                alt="JanjatiSetu Logo" 
+                className="w-11 h-11 sm:w-12 sm:h-12 rounded-full object-cover shadow-md border-2 border-amber-400 bg-amber-50 flex-shrink-0 group-hover:scale-105 transition"
+              />
               <div>
                 <div className="flex items-center gap-2">
-                  <h1 className="font-black text-slate-900 text-sm sm:text-base tracking-tight leading-tight">
-                    TRIBAL SCHOLARSHIP PORTAL
+                  <h1 className="font-black text-slate-900 text-base sm:text-lg tracking-tight leading-tight flex items-center gap-1.5">
+                    <span>{t('siteName')}</span>
+                    {t('siteName') !== 'JanjatiSetu' && (
+                      <span className="text-xs text-slate-400 font-semibold">(JanjatiSetu)</span>
+                    )}
                   </h1>
                   <span className="hidden md:inline px-1.5 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded">
                     MoTA
                   </span>
                 </div>
                 <p className="text-[11px] sm:text-xs text-slate-500 font-medium">
-                  Ministry of Tribal Affairs • Government of India
+                  {t('siteTagline')} • {t('govIndia')}
                 </p>
               </div>
             </div>
 
-            {/* Global Search Bar with Typeahead (Careers360 + myScheme style) */}
+            {/* Global Search Bar with Typeahead */}
             <div ref={searchRef} className="relative flex-1 max-w-xl hidden md:block">
               <div className="relative flex items-center">
                 <Search className="absolute left-3.5 w-4 h-4 text-slate-400 pointer-events-none" />
@@ -300,7 +307,7 @@ export const HeaderNav = ({ onOpenJago, onOpenCompare }) => {
                     setSearchOpen(true);
                   }}
                   onFocus={() => setSearchOpen(true)}
-                  placeholder="Search 5 MoTA schemes, 246 IITs/IIMs, DigiLocker, PFMS DBT..."
+                  placeholder={t('searchPlaceholder')}
                   className="w-full pl-10 pr-20 py-2 text-xs sm:text-sm bg-slate-50 hover:bg-slate-100/80 focus:bg-white border border-slate-300 focus:border-gov-blue rounded-full focus:ring-2 focus:ring-blue-100 transition shadow-inner"
                 />
                 <div className="absolute right-3 flex items-center gap-1.5 text-slate-400 text-[11px]">
@@ -314,14 +321,14 @@ export const HeaderNav = ({ onOpenJago, onOpenCompare }) => {
               {searchOpen && searchQuery.trim() !== '' && (
                 <div className="absolute top-full mt-2 left-0 right-0 bg-white rounded-2xl shadow-2xl border border-slate-200 py-3 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
                   <div className="px-4 pb-2 border-b border-slate-100 flex items-center justify-between text-xs text-slate-500">
-                    <span className="font-bold text-slate-800">Matching Results ({filteredSearch.length})</span>
-                    <span className="text-[11px]">Press ESC to close</span>
+                    <span className="font-bold text-slate-800">{t('matchingResults')} ({filteredSearch.length})</span>
+                    <span className="text-[11px]">ESC to close</span>
                   </div>
 
                   {filteredSearch.length === 0 ? (
                     <div className="px-4 py-6 text-center text-slate-500 text-xs">
                       <HelpCircle className="w-6 h-6 mx-auto text-slate-300 mb-2" />
-                      No exact matches for "{searchQuery}". Ask JAGO AI for instant assistance.
+                      No exact matches for "{searchQuery}".
                     </div>
                   ) : (
                     <div className="max-h-80 overflow-y-auto py-1 divide-y divide-slate-50">
@@ -364,11 +371,11 @@ export const HeaderNav = ({ onOpenJago, onOpenCompare }) => {
                     <div className="flex items-center gap-2">
                       <Bot className="w-4 h-4 text-amber-700" />
                       <span className="text-xs font-bold text-amber-900">
-                        Can't find what you need? Ask JAGO Multilingual AI
+                        {t('cantFindAskJago')}
                       </span>
                     </div>
                     <span className="text-[11px] font-bold text-amber-800 flex items-center gap-0.5">
-                      Ask JAGO <ArrowRight className="w-3 h-3" />
+                      {t('askJago')} <ArrowRight className="w-3 h-3" />
                     </span>
                   </div>
                 </div>
@@ -400,7 +407,7 @@ export const HeaderNav = ({ onOpenJago, onOpenCompare }) => {
                 title="Ask JAGO AI Assistant"
               >
                 <Bot className="w-4 h-4 text-slate-950" />
-                <span className="hidden sm:inline">Ask JAGO</span>
+                <span className="hidden sm:inline">{t('askJago')}</span>
               </button>
 
               {/* User Account / Login Button */}
@@ -413,12 +420,12 @@ export const HeaderNav = ({ onOpenJago, onOpenCompare }) => {
                     <div className="w-6 h-6 rounded-full bg-gov-blue text-white flex items-center justify-center font-bold text-[10px]">
                       {user.name ? user.name.charAt(0) : 'U'}
                     </div>
-                    <span className="hidden sm:inline max-w-[100px] truncate">{user.name || 'Profile'}</span>
+                    <span className="hidden sm:inline max-w-[100px] truncate">{user.name || t('profile')}</span>
                   </button>
                   <button
                     onClick={logout}
                     className="p-1.5 rounded-full text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition"
-                    title="Log Out"
+                    title={t('signOut')}
                   >
                     <LogOut className="w-4 h-4" />
                   </button>
@@ -428,7 +435,7 @@ export const HeaderNav = ({ onOpenJago, onOpenCompare }) => {
                   onClick={() => navigate('/login')}
                   className="px-4 py-1.5 rounded-full bg-gov-navy hover:bg-gov-blue text-white font-bold text-xs shadow-sm transition"
                 >
-                  Sign In
+                  {t('signIn')}
                 </button>
               )}
 
@@ -444,7 +451,7 @@ export const HeaderNav = ({ onOpenJago, onOpenCompare }) => {
           </div>
         </div>
 
-        {/* Mega Menu Navigation Bar (Desktop - Careers360 / myScheme style) */}
+        {/* Mega Menu Navigation Bar */}
         <nav className="hidden md:block bg-gov-navy text-white border-t border-slate-800 relative shadow-md">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between">
             <ul className="flex items-center space-x-1 lg:space-x-2 text-xs font-bold tracking-wide">
@@ -456,7 +463,7 @@ export const HeaderNav = ({ onOpenJago, onOpenCompare }) => {
                     location.pathname === '/' ? 'text-amber-400 bg-slate-800' : 'text-slate-200'
                   }`}
                 >
-                  Home
+                  {t('home')}
                 </button>
               </li>
 
@@ -472,7 +479,7 @@ export const HeaderNav = ({ onOpenJago, onOpenCompare }) => {
                     activeMegaMenu === 'schemes' || location.pathname === '/schemes' ? 'text-amber-400 bg-slate-800' : 'text-slate-200'
                   }`}
                 >
-                  Scholarship Schemes
+                  {t('schemes')}
                   <ChevronDown className="w-3.5 h-3.5" />
                 </button>
 
@@ -482,7 +489,7 @@ export const HeaderNav = ({ onOpenJago, onOpenCompare }) => {
                     <div>
                       <h4 className="text-[11px] font-black uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5">
                         <GraduationCap className="w-4 h-4 text-gov-blue" />
-                        School & Higher Education
+                        {t('schoolHigherEd')}
                       </h4>
                       <div className="space-y-2">
                         <div 
@@ -493,7 +500,7 @@ export const HeaderNav = ({ onOpenJago, onOpenCompare }) => {
                             <span className="font-bold text-xs text-slate-900 group-hover:text-gov-blue">Pre-Matric ST Scholarship</span>
                             <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.2 rounded">Class IX-X</span>
                           </div>
-                          <p className="text-[11px] text-slate-500 mt-0.5">₹3,500/yr (Day) • ₹7,000/yr (Hostel) + 10% Divyang grant</p>
+                          <p className="text-[11px] text-slate-500 mt-0.5">₹3,500/yr (Day) • ₹7,000/yr (Hostel)</p>
                         </div>
 
                         <div 
@@ -515,7 +522,7 @@ export const HeaderNav = ({ onOpenJago, onOpenCompare }) => {
                             <span className="font-bold text-xs text-slate-900 group-hover:text-gov-blue">Top-Class Higher Education</span>
                             <span className="text-[10px] bg-amber-200 text-amber-900 font-black px-1.5 py-0.2 rounded">₹45k Laptop</span>
                           </div>
-                          <p className="text-[11px] text-slate-600 mt-0.5">IITs, IIMs, AIIMS, NITs (Full fee + ₹36k/yr living)</p>
+                          <p className="text-[11px] text-slate-600 mt-0.5">IITs, IIMs, AIIMS (Full fee + ₹36k/yr living)</p>
                         </div>
                       </div>
                     </div>
@@ -523,7 +530,7 @@ export const HeaderNav = ({ onOpenJago, onOpenCompare }) => {
                     <div>
                       <h4 className="text-[11px] font-black uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5">
                         <Award className="w-4 h-4 text-amber-600" />
-                        Fellowships & Global Studies
+                        {t('fellowshipsAbroad')}
                       </h4>
                       <div className="space-y-2">
                         <div 
@@ -534,7 +541,7 @@ export const HeaderNav = ({ onOpenJago, onOpenCompare }) => {
                             <span className="font-bold text-xs text-slate-900 group-hover:text-gov-blue">National Fellowship (NFST)</span>
                             <span className="text-[10px] bg-purple-100 text-purple-800 font-bold px-1.5 py-0.2 rounded">Ph.D / M.Phil</span>
                           </div>
-                          <p className="text-[11px] text-slate-500 mt-0.5">₹31,000/mo JRF • ₹35,000/mo SRF + HRA + contingency</p>
+                          <p className="text-[11px] text-slate-500 mt-0.5">₹31,000/mo JRF • ₹35,000/mo SRF + HRA</p>
                         </div>
 
                         <div 
@@ -545,7 +552,7 @@ export const HeaderNav = ({ onOpenJago, onOpenCompare }) => {
                             <span className="font-bold text-xs text-slate-900 group-hover:text-gov-blue">National Overseas Scholarship</span>
                             <span className="text-[10px] bg-indigo-100 text-indigo-800 font-bold px-1.5 py-0.2 rounded">Top 500 QS</span>
                           </div>
-                          <p className="text-[11px] text-slate-500 mt-0.5">Full foreign tuition + $15,400/yr allowance + airfare</p>
+                          <p className="text-[11px] text-slate-500 mt-0.5">Full foreign tuition + $15,400/yr allowance</p>
                         </div>
 
                         <div 
@@ -553,7 +560,7 @@ export const HeaderNav = ({ onOpenJago, onOpenCompare }) => {
                           className="p-2.5 rounded-xl bg-slate-900 text-white hover:bg-slate-800 cursor-pointer transition flex items-center justify-between"
                         >
                           <div>
-                            <p className="font-bold text-xs text-amber-400">View All 5 Schemes Matrix</p>
+                            <p className="font-bold text-xs text-amber-400">{t('viewAllSchemesMatrix')}</p>
                             <p className="text-[10px] text-slate-300">Eligibility rules, guidelines & timelines</p>
                           </div>
                           <ArrowRight className="w-4 h-4 text-amber-400" />
@@ -575,7 +582,7 @@ export const HeaderNav = ({ onOpenJago, onOpenCompare }) => {
                     activeMegaMenu === 'tools' ? 'text-amber-400 bg-slate-800' : 'text-slate-200'
                   }`}
                 >
-                  Predictors & Tools
+                  {t('predictorsTools')}
                   <ChevronDown className="w-3.5 h-3.5" />
                 </button>
 
@@ -593,8 +600,8 @@ export const HeaderNav = ({ onOpenJago, onOpenCompare }) => {
                       <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center mb-2">
                         <Calculator className="w-4 h-4" />
                       </div>
-                      <h4 className="font-bold text-xs text-slate-900 group-hover:text-emerald-800">Allowance Calculator</h4>
-                      <p className="text-[11px] text-slate-500 mt-0.5">Calculate financial entitlement based on fee & hosteller status</p>
+                      <h4 className="font-bold text-xs text-slate-900 group-hover:text-emerald-800">{t('allowanceCalculator')}</h4>
+                      <p className="text-[11px] text-slate-500 mt-0.5">{t('allowanceCalcSub')}</p>
                     </div>
 
                     <div 
@@ -607,8 +614,8 @@ export const HeaderNav = ({ onOpenJago, onOpenCompare }) => {
                       <div className="w-8 h-8 rounded-lg bg-blue-100 text-gov-blue flex items-center justify-center mb-2">
                         <Layers className="w-4 h-4" />
                       </div>
-                      <h4 className="font-bold text-xs text-slate-900 group-hover:text-gov-blue">Scheme Comparator</h4>
-                      <p className="text-[11px] text-slate-500 mt-0.5">Compare 2-3 MoTA scholarships side-by-side</p>
+                      <h4 className="font-bold text-xs text-slate-900 group-hover:text-gov-blue">{t('schemeComparator')}</h4>
+                      <p className="text-[11px] text-slate-500 mt-0.5">{t('schemeComparatorSub')}</p>
                     </div>
 
                     <div 
@@ -618,8 +625,8 @@ export const HeaderNav = ({ onOpenJago, onOpenCompare }) => {
                       <div className="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center mb-2">
                         <ShieldCheck className="w-4 h-4" />
                       </div>
-                      <h4 className="font-bold text-xs text-slate-900 group-hover:text-indigo-800">DigiLocker Vault</h4>
-                      <p className="text-[11px] text-slate-500 mt-0.5">Zero-upload digital document verification</p>
+                      <h4 className="font-bold text-xs text-slate-900 group-hover:text-indigo-800">{t('digilockerVault')}</h4>
+                      <p className="text-[11px] text-slate-500 mt-0.5">{t('digilockerVaultSub')}</p>
                     </div>
 
                     <div 
@@ -629,8 +636,8 @@ export const HeaderNav = ({ onOpenJago, onOpenCompare }) => {
                       <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center mb-2">
                         <CreditCard className="w-4 h-4" />
                       </div>
-                      <h4 className="font-bold text-xs text-slate-900 group-hover:text-amber-900">PFMS DBT Ledger</h4>
-                      <p className="text-[11px] text-slate-500 mt-0.5">Live Aadhaar APBS bank credit status</p>
+                      <h4 className="font-bold text-xs text-slate-900 group-hover:text-amber-900">{t('pfmsLedger')}</h4>
+                      <p className="text-[11px] text-slate-500 mt-0.5">{t('pfmsLedgerSub')}</p>
                     </div>
                   </div>
                 )}
@@ -645,7 +652,7 @@ export const HeaderNav = ({ onOpenJago, onOpenCompare }) => {
                   }`}
                 >
                   <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                  DigiLocker Wallet
+                  {t('wallet')}
                 </button>
               </li>
 
@@ -658,7 +665,7 @@ export const HeaderNav = ({ onOpenJago, onOpenCompare }) => {
                   }`}
                 >
                   <CreditCard className="w-3.5 h-3.5 text-amber-400" />
-                  PFMS DBT Tracker
+                  {t('dbtTracker')}
                 </button>
               </li>
 
@@ -671,11 +678,11 @@ export const HeaderNav = ({ onOpenJago, onOpenCompare }) => {
                   }`}
                 >
                   <HelpCircle className="w-3.5 h-3.5 text-blue-400" />
-                  Grievance & Appeals
+                  {t('grievance')}
                 </button>
               </li>
 
-              {/* Officer Console (If logged in as Officer) */}
+              {/* Officer Console */}
               {isOfficer && (
                 <li>
                   <button
@@ -685,7 +692,7 @@ export const HeaderNav = ({ onOpenJago, onOpenCompare }) => {
                     }`}
                   >
                     <Building2 className="w-3.5 h-3.5" />
-                    Officer Console
+                    {t('officerConsole')}
                   </button>
                 </li>
               )}
@@ -697,115 +704,72 @@ export const HeaderNav = ({ onOpenJago, onOpenCompare }) => {
                 onClick={() => navigate('/schemes')}
                 className="bg-amber-500 hover:bg-amber-400 text-slate-950 px-3.5 py-1.5 rounded-full font-black text-xs flex items-center gap-1 transition shadow hover:scale-105"
               >
-                <span>Apply for FY26-27</span>
+                <span>{t('applyForFY')}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
           </div>
         </nav>
 
-        {/* Mobile Navigation Drawer (Accordion style) */}
+        {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
           <div className="md:hidden bg-white border-b border-slate-200 px-4 py-4 space-y-3 shadow-xl max-h-[85vh] overflow-y-auto animate-in slide-in-from-top-2 duration-200">
-            {/* Mobile Search */}
-            <div className="relative">
-              <Search className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search schemes, IITs, calculators..."
-                className="w-full pl-9 pr-4 py-2 text-xs bg-slate-50 border border-slate-300 rounded-lg focus:bg-white"
-              />
-            </div>
-
-            {/* Mobile Search Results */}
-            {searchQuery.trim() !== '' && (
-              <div className="bg-slate-50 rounded-xl p-2 border border-slate-200 space-y-1">
-                {filteredSearch.slice(0, 4).map((item, idx) => (
-                  <div
-                    key={idx}
-                    onClick={() => {
-                      setMobileMenuOpen(false);
-                      handleSearchSelect(item);
-                    }}
-                    className="p-2 bg-white rounded-lg text-xs font-semibold text-slate-800 flex items-center justify-between"
-                  >
-                    <span>{item.title}</span>
-                    <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-                  </div>
+            {/* Language Selector Mobile */}
+            <div className="flex items-center justify-between p-2 bg-slate-50 rounded-xl border border-slate-200">
+              <span className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                <Globe className="w-4 h-4 text-amber-600" />
+                Language / भाषा:
+              </span>
+              <select
+                value={currentLanguage}
+                onChange={(e) => setLanguage(e.target.value)}
+                className="text-xs font-bold bg-white border border-slate-300 rounded-lg px-2 py-1 text-slate-900"
+              >
+                {languages.map(l => (
+                  <option key={l.code} value={l.code}>{l.native}</option>
                 ))}
-              </div>
-            )}
+              </select>
+            </div>
 
             {/* Accordion Categories */}
             <div className="space-y-2 pt-2 border-t border-slate-100 text-xs">
-              <div>
-                <button
-                  onClick={() => setMobileExpandedSection(mobileExpandedSection === 'schemes' ? null : 'schemes')}
-                  className="w-full py-2 flex items-center justify-between font-bold text-slate-800 border-b border-slate-100"
-                >
-                  <span className="flex items-center gap-2">
-                    <GraduationCap className="w-4 h-4 text-gov-blue" />
-                    Scholarship Schemes (5)
-                  </span>
-                  <ChevronDown className={`w-4 h-4 transition ${mobileExpandedSection === 'schemes' ? 'rotate-180' : ''}`} />
-                </button>
+              <button
+                onClick={() => { setMobileMenuOpen(false); navigate('/'); }}
+                className="w-full py-2.5 flex items-center gap-2 font-bold text-slate-800 border-b border-slate-100 text-left"
+              >
+                {t('home')}
+              </button>
 
-                {mobileExpandedSection === 'schemes' && (
-                  <div className="pl-6 py-2 space-y-2 bg-slate-50 rounded-lg mt-1">
-                    <button onClick={() => { setMobileMenuOpen(false); navigate('/apply/PRE_MATRIC'); }} className="block w-full text-left py-1 text-slate-700 font-medium">Pre-Matric (Class IX-X)</button>
-                    <button onClick={() => { setMobileMenuOpen(false); navigate('/apply/POST_MATRIC'); }} className="block w-full text-left py-1 text-slate-700 font-medium">Post-Matric (Class XI to PG)</button>
-                    <button onClick={() => { setMobileMenuOpen(false); navigate('/apply/TOP_CLASS'); }} className="block w-full text-left py-1 text-slate-700 font-medium">Top Class Higher Ed (IITs/AIIMS)</button>
-                    <button onClick={() => { setMobileMenuOpen(false); navigate('/apply/NFST'); }} className="block w-full text-left py-1 text-slate-700 font-medium">National Fellowship (NFST PhD)</button>
-                    <button onClick={() => { setMobileMenuOpen(false); navigate('/apply/NOS'); }} className="block w-full text-left py-1 text-slate-700 font-medium">National Overseas (NOS Abroad)</button>
-                  </div>
-                )}
-              </div>
+              <button
+                onClick={() => { setMobileMenuOpen(false); navigate('/schemes'); }}
+                className="w-full py-2.5 flex items-center gap-2 font-bold text-slate-800 border-b border-slate-100 text-left"
+              >
+                <GraduationCap className="w-4 h-4 text-gov-blue" />
+                {t('schemes')}
+              </button>
 
               <button
                 onClick={() => { setMobileMenuOpen(false); navigate('/wallet'); }}
-                className="w-full py-2.5 flex items-center gap-2 font-bold text-slate-800 border-b border-slate-100"
+                className="w-full py-2.5 flex items-center gap-2 font-bold text-slate-800 border-b border-slate-100 text-left"
               >
                 <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                DigiLocker Document Wallet
+                {t('wallet')}
               </button>
 
               <button
                 onClick={() => { setMobileMenuOpen(false); navigate('/payments'); }}
-                className="w-full py-2.5 flex items-center gap-2 font-bold text-slate-800 border-b border-slate-100"
+                className="w-full py-2.5 flex items-center gap-2 font-bold text-slate-800 border-b border-slate-100 text-left"
               >
                 <CreditCard className="w-4 h-4 text-amber-600" />
-                PFMS DBT Payment Tracker
+                {t('dbtTracker')}
               </button>
 
               <button
                 onClick={() => { setMobileMenuOpen(false); navigate('/grievance'); }}
-                className="w-full py-2.5 flex items-center gap-2 font-bold text-slate-800 border-b border-slate-100"
+                className="w-full py-2.5 flex items-center gap-2 font-bold text-slate-800 border-b border-slate-100 text-left"
               >
                 <HelpCircle className="w-4 h-4 text-blue-600" />
-                Grievance Redressal
-              </button>
-
-              {isOfficer && (
-                <button
-                  onClick={() => { setMobileMenuOpen(false); navigate('/officer'); }}
-                  className="w-full py-2.5 flex items-center gap-2 font-bold text-purple-800 bg-purple-50 px-2 rounded-lg"
-                >
-                  <Building2 className="w-4 h-4 text-purple-700" />
-                  Officer Console
-                </button>
-              )}
-            </div>
-
-            {/* Mobile CTAs */}
-            <div className="pt-3 flex flex-col gap-2">
-              <button
-                onClick={() => { setMobileMenuOpen(false); onOpenJago?.(); }}
-                className="w-full py-2.5 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs flex items-center justify-center gap-2"
-              >
-                <Bot className="w-4 h-4" />
-                Ask JAGO AI Voice Assistant
+                {t('grievance')}
               </button>
             </div>
           </div>
