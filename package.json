@@ -9,6 +9,7 @@
     "dev:server": "cd server && npm run dev",
     "dev:client": "cd client && npm run dev",
     "dev": "concurrently --kill-others-on-fail -n \"SERVER,CLIENT\" -c \"bgBlue.bold,bgGreen.bold\" \"npm run dev:server\" \"npm run dev:client\"",
+    "test:all": "cd server && node test_all_phases.js && node test_security_dpdp.js",
     "start": "cd server && npm start"
   },
   "devDependencies": {
