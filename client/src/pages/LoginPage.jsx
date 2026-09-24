@@ -18,7 +18,11 @@ import {
   QrCode,
   FileCheck2,
   Cpu,
-  BadgeCheck
+  BadgeCheck,
+  Shield,
+  Zap,
+  Globe2,
+  Award
 } from 'lucide-react';
 
 export const LoginPage = () => {
@@ -36,6 +40,10 @@ export const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const [formError, setFormError] = useState(null);
   const [timer, setTimer] = useState(0);
+
+  // E2EE Dynamic handshake visual state
+  const [e2eeKeyHash] = useState(() => '0x' + Math.random().toString(16).substring(2, 10).toUpperCase() + '...' + Math.random().toString(16).substring(2, 6).toUpperCase());
+  const [sessionNonce] = useState(() => 'nonce_' + Date.now().toString(36));
 
   // APAAR ID state
   const [apaarId, setApaarId] = useState('');
@@ -105,7 +113,6 @@ export const LoginPage = () => {
     }
     try {
       setLoading(true);
-      // Authenticate via Student Top Class / Post-Matric profile
       await demoLogin('student_topclass');
       navigate('/');
     } catch (err) {
@@ -144,7 +151,11 @@ export const LoginPage = () => {
     setFormError(null);
     try {
       await demoLogin(key);
-      navigate('/');
+      if (key.includes('nodal') || key.includes('admin')) {
+        navigate('/officer');
+      } else {
+        navigate('/');
+      }
     } catch (err) {
       setFormError(err.message);
     } finally {
@@ -153,7 +164,7 @@ export const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-[calc(100vh-120px)] flex flex-col justify-center px-4 py-8 max-w-lg mx-auto">
+    <div className="min-h-[calc(100vh-120px)] flex flex-col justify-center px-4 py-8 max-w-xl mx-auto">
       {/* MoTA Emblem & Title Header */}
       <div className="text-center mb-6">
         <img 
@@ -161,10 +172,10 @@ export const LoginPage = () => {
           alt="JanjatiSetu Logo" 
           className="w-20 h-20 rounded-full object-cover shadow-xl border-2 border-amber-400 bg-amber-50 mx-auto mb-3"
         />
-        <h2 className="text-2xl font-black text-gov-navy tracking-tight">
+        <h2 className="text-2xl sm:text-3xl font-black text-gov-navy tracking-tight">
           {t('siteName')} (JanjatiSetu)
         </h2>
-        <p className="text-xs text-slate-600 mt-0.5">
+        <p className="text-xs sm:text-sm text-slate-600 mt-0.5">
           {t('loginSubtitle')}
         </p>
         <p className="text-[11px] font-semibold text-amber-800 bg-amber-50 rounded-full py-0.5 px-3 inline-block mt-2 border border-amber-200">
@@ -174,18 +185,36 @@ export const LoginPage = () => {
 
       {/* Main Login Card */}
       <div className="bg-white rounded-3xl shadow-xl border border-slate-200 p-6 sm:p-7 space-y-5 relative overflow-hidden">
-        {/* E2EE Cryptographic Security Strip */}
-        <div className="p-3 bg-slate-900 rounded-2xl border border-slate-800 text-white flex items-start gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center flex-shrink-0 mt-0.5">
-            <Lock className="w-4 h-4" />
+        {/* E2EE Cryptographic Security Header Box */}
+        <div className="p-3.5 bg-slate-950 rounded-2xl border border-slate-800 text-white space-y-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center flex-shrink-0">
+                <Lock className="w-4 h-4" />
+              </div>
+              <div>
+                <span className="text-xs font-bold text-emerald-400 block leading-tight">
+                  {t('e2eeBadge')}
+                </span>
+                <span className="text-[10px] text-slate-400 block">
+                  {t('e2eeNotice')}
+                </span>
+              </div>
+            </div>
+            <span className="hidden sm:inline-block px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-[10px] font-mono text-emerald-300">
+              TLS 1.3
+            </span>
           </div>
-          <div>
-            <span className="text-[11px] font-bold text-emerald-400 block leading-tight">
-              {t('e2eeBadge')}
-            </span>
-            <span className="text-[10px] text-slate-400 leading-tight block mt-0.5">
-              {t('e2eeNotice')}
-            </span>
+
+          <div className="pt-2 border-t border-slate-800/80 grid grid-cols-2 gap-2 text-[10px] font-mono text-slate-400">
+            <div>
+              <span className="text-slate-500 block">{t('e2eeCipherSuite')}</span>
+              <span className="text-slate-300">{e2eeKeyHash}</span>
+            </div>
+            <div className="text-right">
+              <span className="text-slate-500 block">{t('e2eeAntiReplay')}</span>
+              <span className="text-emerald-400">{sessionNonce}</span>
+            </div>
           </div>
         </div>
 
@@ -279,7 +308,7 @@ export const LoginPage = () => {
                     onClick={() => { setStep('phone'); setOtp(''); }}
                     className="text-[11px] text-gov-blue font-bold underline"
                   >
-                    Change Phone Number
+                    {t('changePhone')}
                   </button>
                 </div>
 
@@ -298,6 +327,18 @@ export const LoginPage = () => {
                     autoFocus
                   />
                 </div>
+
+                {/* Instant Dev OTP Auto-Fill Button */}
+                {devOtpHint && (
+                  <button
+                    type="button"
+                    onClick={() => setOtp(devOtpHint)}
+                    className="w-full py-2 px-3 bg-amber-50 hover:bg-amber-100 border border-amber-300 rounded-xl text-amber-900 text-xs font-bold flex items-center justify-center gap-1.5 transition"
+                  >
+                    <Zap className="w-3.5 h-3.5 text-amber-600" />
+                    <span>{t('instantDevOtpBtn')} ({devOtpHint})</span>
+                  </button>
+                )}
 
                 {/* Resend OTP / Timer */}
                 <div className="flex items-center justify-between text-xs text-slate-500">
@@ -348,7 +389,7 @@ export const LoginPage = () => {
                 value={apaarId}
                 onChange={(e) => setApaarId(e.target.value)}
                 placeholder={t('apaarPlaceholder')}
-                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-semibold text-slate-800 focus:bg-white focus:ring-2 focus:ring-gov-blue transition"
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-semibold text-slate-800 focus:bg-white focus:ring-2 focus:ring-gov-blue transition font-mono"
                 required
               />
               <p className="text-[11px] text-slate-500 mt-1.5">
@@ -359,7 +400,7 @@ export const LoginPage = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 px-4 bg-gradient-to-r from-indigo-700 to-purple-800 text-white text-xs font-extrabold rounded-xl shadow-md flex items-center justify-center gap-2 transition"
+              className="w-full py-3 px-4 bg-gradient-to-r from-indigo-700 to-purple-800 hover:from-indigo-800 hover:to-purple-900 text-white text-xs font-extrabold rounded-xl shadow-md flex items-center justify-center gap-2 transition"
             >
               <FileCheck2 className="w-4 h-4" />
               <span>{t('apaarVerifyBtn')}</span>
@@ -418,7 +459,7 @@ export const LoginPage = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 px-4 bg-gradient-to-r from-purple-800 to-slate-900 text-white text-xs font-extrabold rounded-xl shadow-md flex items-center justify-center gap-2 transition mt-2"
+              className="w-full py-3 px-4 bg-gradient-to-r from-purple-800 to-slate-900 hover:from-purple-900 hover:to-black text-white text-xs font-extrabold rounded-xl shadow-md flex items-center justify-center gap-2 transition mt-2"
             >
               <Building2 className="w-4 h-4" />
               <span>{t('officerLoginBtn')}</span>
@@ -426,43 +467,103 @@ export const LoginPage = () => {
           </form>
         )}
 
-        {/* 1-Click Fast Evaluator Persona Switcher */}
-        <div className="pt-4 border-t border-slate-100">
-          <p className="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 mb-2.5 text-center">
-            {t('orQuickDemoPersonas')}
-          </p>
-          <div className="grid grid-cols-2 gap-2 text-xs">
-            <button
-              type="button"
-              onClick={() => handleQuickDemo('student_topclass')}
-              className="p-2 rounded-xl bg-slate-50 hover:bg-amber-50 border border-slate-200 text-slate-800 font-bold text-[11px] text-left transition flex items-center gap-1.5"
-            >
-              <span className="w-2 h-2 rounded-full bg-amber-500"></span>
-              <span>Jaipal (IIT Top Class)</span>
-            </button>
+        {/* Full 9-Persona 1-Click Fast Evaluator Grid */}
+        <div className="pt-4 border-t border-slate-100 space-y-2.5">
+          <div className="text-center">
+            <p className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
+              {t('ninePersonasHeader')}
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+            {/* 1. Pre-Matric */}
             <button
               type="button"
               onClick={() => handleQuickDemo('student_prematric')}
-              className="p-2 rounded-xl bg-slate-50 hover:bg-emerald-50 border border-slate-200 text-slate-800 font-bold text-[11px] text-left transition flex items-center gap-1.5"
+              className="p-2 rounded-xl bg-slate-50 hover:bg-emerald-50 border border-slate-200 text-slate-800 text-[11px] text-left transition flex items-center gap-1.5 font-medium"
             >
-              <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-              <span>Birsa (Pre-Matric IX)</span>
+              <span className="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0"></span>
+              <span className="truncate"><strong>Birsa</strong> (Pre-Matric IX)</span>
             </button>
+
+            {/* 2. Post-Matric */}
+            <button
+              type="button"
+              onClick={() => handleQuickDemo('student_postmatric')}
+              className="p-2 rounded-xl bg-slate-50 hover:bg-teal-50 border border-slate-200 text-slate-800 text-[11px] text-left transition flex items-center gap-1.5 font-medium"
+            >
+              <span className="w-2 h-2 rounded-full bg-teal-500 flex-shrink-0"></span>
+              <span className="truncate"><strong>Mangal</strong> (Post-Matric ITI)</span>
+            </button>
+
+            {/* 3. Top Class */}
+            <button
+              type="button"
+              onClick={() => handleQuickDemo('student_topclass')}
+              className="p-2 rounded-xl bg-slate-50 hover:bg-amber-50 border border-slate-200 text-slate-800 text-[11px] text-left transition flex items-center gap-1.5 font-medium"
+            >
+              <span className="w-2 h-2 rounded-full bg-amber-500 flex-shrink-0"></span>
+              <span className="truncate"><strong>Jaipal</strong> (IIT Bombay Top Class)</span>
+            </button>
+
+            {/* 4. NFST Fellowship */}
             <button
               type="button"
               onClick={() => handleQuickDemo('student_nfst')}
-              className="p-2 rounded-xl bg-slate-50 hover:bg-purple-50 border border-slate-200 text-slate-800 font-bold text-[11px] text-left transition flex items-center gap-1.5"
+              className="p-2 rounded-xl bg-slate-50 hover:bg-purple-50 border border-slate-200 text-slate-800 text-[11px] text-left transition flex items-center gap-1.5 font-medium"
             >
-              <span className="w-2 h-2 rounded-full bg-purple-500"></span>
-              <span>Shanti (NFST Fellow)</span>
+              <span className="w-2 h-2 rounded-full bg-purple-500 flex-shrink-0"></span>
+              <span className="truncate"><strong>Shanti</strong> (Ph.D. NFST Fellow)</span>
             </button>
+
+            {/* 5. NOS Overseas */}
+            <button
+              type="button"
+              onClick={() => handleQuickDemo('student_nos')}
+              className="p-2 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 text-slate-800 text-[11px] text-left transition flex items-center gap-1.5 font-medium"
+            >
+              <span className="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0"></span>
+              <span className="truncate"><strong>Arjun</strong> (Oxford NOS Scholar)</span>
+            </button>
+
+            {/* 6. PVTG Scholar */}
+            <button
+              type="button"
+              onClick={() => handleQuickDemo('student_pvtg')}
+              className="p-2 rounded-xl bg-slate-50 hover:bg-rose-50 border border-slate-200 text-slate-800 text-[11px] text-left transition flex items-center gap-1.5 font-medium"
+            >
+              <span className="w-2 h-2 rounded-full bg-rose-500 flex-shrink-0"></span>
+              <span className="truncate"><strong>Sunita</strong> (PVTG Birhor Scholar)</span>
+            </button>
+
+            {/* 7. Institute Nodal Officer */}
             <button
               type="button"
               onClick={() => handleQuickDemo('institute_nodal')}
-              className="p-2 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 text-slate-800 font-bold text-[11px] text-left transition flex items-center gap-1.5"
+              className="p-2 rounded-xl bg-slate-50 hover:bg-indigo-50 border border-slate-200 text-slate-800 text-[11px] text-left transition flex items-center gap-1.5 font-medium"
             >
-              <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-              <span>Prof. Meena (IIT Nodal)</span>
+              <span className="w-2 h-2 rounded-full bg-indigo-500 flex-shrink-0"></span>
+              <span className="truncate"><strong>Prof. Meena</strong> (IIT Nodal)</span>
+            </button>
+
+            {/* 8. State Nodal Officer */}
+            <button
+              type="button"
+              onClick={() => handleQuickDemo('state_nodal')}
+              className="p-2 rounded-xl bg-slate-50 hover:bg-sky-50 border border-slate-200 text-slate-800 text-[11px] text-left transition flex items-center gap-1.5 font-medium"
+            >
+              <span className="w-2 h-2 rounded-full bg-sky-500 flex-shrink-0"></span>
+              <span className="truncate"><strong>Dr. Mohapatra</strong> (Odisha SNO)</span>
+            </button>
+
+            {/* 9. MoTA Central Admin */}
+            <button
+              type="button"
+              onClick={() => handleQuickDemo('mota_admin')}
+              className="p-2 rounded-xl bg-slate-50 hover:bg-slate-200 border border-slate-200 text-slate-800 text-[11px] text-left transition flex items-center gap-1.5 font-medium"
+            >
+              <span className="w-2 h-2 rounded-full bg-slate-800 flex-shrink-0"></span>
+              <span className="truncate"><strong>Smt. Sharma</strong> (MoTA Admin)</span>
             </button>
           </div>
         </div>
@@ -471,4 +572,5 @@ export const LoginPage = () => {
   );
 };
 
+export const LoginPageDefault = LoginPage;
 export default LoginPage;

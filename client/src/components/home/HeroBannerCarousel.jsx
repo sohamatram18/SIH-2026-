@@ -135,7 +135,7 @@ export const HeroBannerCarousel = ({ onOpenJago, onOpenCompare }) => {
                 {slide.badge}
               </span>
               <span className="hidden sm:inline-flex items-center gap-1 text-[11px] text-slate-400 bg-slate-800/60 px-2 py-0.5 rounded-full border border-slate-700">
-                <Clock className="w-3 h-3 text-amber-400" /> Deadline: Oct 31, 2026
+                <Clock className="w-3 h-3 text-amber-400" /> {t('heroDeadline')}
               </span>
             </div>
 
@@ -234,8 +234,8 @@ export const HeroBannerCarousel = ({ onOpenJago, onOpenCompare }) => {
 
               {/* Switch slide quick link */}
               <div className="pt-1 flex items-center justify-between text-[11px] text-slate-400">
-                <span>{t('slideOf')} {currentSlide + 1} of {slides.length}</span>
-                <span className="text-amber-300 font-medium">JanjatiSetu Portal</span>
+                <span>{t('slideOf')} {currentSlide + 1} {t('ofTotal')} {slides.length}</span>
+                <span className="text-amber-300 font-medium">{t('siteName')}</span>
               </div>
             </div>
           </div>
@@ -276,10 +276,10 @@ export const HeroBannerCarousel = ({ onOpenJago, onOpenCompare }) => {
           <div className="hidden sm:flex items-center gap-4 text-xs text-slate-400">
             <span className="flex items-center gap-1.5">
               <ShieldCheck className="w-4 h-4 text-emerald-400" />
-              DPDP Act 2023 Compliant
+              {t('dpdpCompliant')}
             </span>
             <span>•</span>
-            <span className="text-slate-300">PFMS Sanctions Active</span>
+            <span className="text-slate-300">{t('pfmsSanctionsActive')}</span>
           </div>
         </div>
       </div>

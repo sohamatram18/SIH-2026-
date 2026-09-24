@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { schemeAPI } from '../services/api.js';
 import { useAuth } from '../context/AuthContext.jsx';
+import { useLanguage } from '../context/LanguageContext.jsx';
 import { 
   Building2, 
   ExternalLink, 
@@ -20,6 +21,7 @@ import {
 
 export const SchemesPage = () => {
   const { user, student } = useAuth();
+  const { t } = useLanguage();
   const [schemes, setSchemes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('ALL'); // 'ALL' | 'Centrally Sponsored' | 'Central Sector'
@@ -102,10 +104,10 @@ export const SchemesPage = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h2 className="text-xl sm:text-2xl font-extrabold text-gov-navy">
-            Ministry of Tribal Affairs Schemes
+            {t('schemes')} • {t('ministryName')}
           </h2>
           <p className="text-xs text-slate-600 mt-0.5">
-            Official guidelines, allowances, eligibility criteria, and source portal links
+            {t('findScholarshipSub')}
           </p>
         </div>
 
@@ -117,7 +119,7 @@ export const SchemesPage = () => {
               filter === 'ALL' ? 'bg-white text-gov-navy shadow-sm' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            All (5)
+            {t('allCategories')} (5)
           </button>
           <button
             onClick={() => setFilter('Centrally Sponsored')}
